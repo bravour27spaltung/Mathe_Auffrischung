@@ -1,0 +1,17 @@
+{
+  "name": "mathe-auffrischung",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mathe-Auffrischung für Erwachsene: Analysis, Lineare Algebra, Statistik. Eine einzelne HTML-Datei, lokal im Browser.",
+  "scripts": {
+    "test": "node tests/generators.test.js && node tests/app.test.js && node tests/lessons.test.js",
+    "test:generators": "node tests/generators.test.js",
+    "test:app": "node tests/app.test.js",
+    "test:lessons": "node tests/lessons.test.js",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "katex": "^0.16.11"
+  }
+}

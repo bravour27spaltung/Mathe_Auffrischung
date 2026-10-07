@@ -1,0 +1,2152 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mathe auffrischen</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d2330; --muted:#667085; --line:#e3dfd6;
+  --accent:#1f5f8b; --accent-ink:#ffffff; --ok:#1b7f4b; --ok-bg:#e6f4ec; --bad:#b3372b; --bad-bg:#fbeae8;
+  --new:#8a6d1d; --new-bg:#f7efd6; --learn:#1f5f8b; --learn-bg:#e3eef6; --solid:#1b7f4b; --solid-bg:#e6f4ec;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14171d; --card:#1d222b; --ink:#e8eaee; --muted:#9aa3b2; --line:#2b3240;
+    --accent:#6fb1de; --accent-ink:#0f1620; --ok:#5fcf93; --ok-bg:#16301f; --bad:#f08a7e; --bad-bg:#3a1e1b;
+    --new:#e6c565; --new-bg:#3a3217; --learn:#6fb1de; --learn-bg:#17283a; --solid:#5fcf93; --solid-bg:#16301f;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:780px;margin:0 auto;padding:20px 16px 60px}
+h1{font:600 1.7rem/1.2 Georgia,"Times New Roman",serif;margin:8px 0 4px}
+h2{font:600 1.15rem/1.3 Georgia,serif;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{justify-content:space-between}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button.small{padding:4px 10px;font-size:.88rem}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted);text-decoration:underline}
+.chip{border-radius:999px;padding:5px 14px;font-size:.92rem}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-size:1.5rem;font-family:Georgia,serif}
+.stat span{color:var(--muted);font-size:.88rem}
+.skill{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:10px 0;border-top:1px solid var(--line);align-items:center}
+.skill:first-of-type{border-top:0}
+.skill .t{font-weight:600}
+.meta{color:var(--muted);font-size:.85rem}
+.badge{font-size:.75rem;border-radius:999px;padding:2px 9px;margin-left:8px;font-weight:600;vertical-align:1px}
+.b-new{background:var(--new-bg);color:var(--new)}
+.b-learn{background:var(--learn-bg);color:var(--learn)}
+.b-solid{background:var(--solid-bg);color:var(--solid)}
+.b-due{background:var(--bad-bg);color:var(--bad)}
+.bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:5px;max-width:240px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.q{font-size:1.1rem}
+.q .katex-display{margin:.7em 0}
+input[type=text]{font:inherit;font-size:1.1rem;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:min(260px,100%)}
+input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px}
+.fb{border-radius:10px;padding:12px 14px;margin-top:14px}
+.fb.ok{background:var(--ok-bg);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-bg);border:1px solid var(--bad)}
+.steps{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.steps div{margin:4px 0}
+.hint{margin-top:10px;color:var(--muted);font-style:italic}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 14px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.tag{color:var(--muted);font-size:.85rem}
+.lesson p{margin:.6em 0}
+.note{color:var(--muted);font-size:.85rem;margin-top:6px}
+.warn{background:var(--new-bg);color:var(--new);border-radius:8px;padding:8px 12px;font-size:.88rem;margin-bottom:12px}
+table.sum{width:100%;border-collapse:collapse;font-size:.95rem}
+table.sum td{padding:6px 4px;border-top:1px solid var(--line)}
+textarea{font:inherit;font-size:.98rem;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical;min-height:100px}
+textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.toggle{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.9rem;margin-top:12px;cursor:pointer}
+.userwork{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.92rem}
+details{border-top:1px solid var(--line);padding:8px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600}
+.tc-ana{--tc:#1f5f8b;--tcbg:#e3eef6}
+.tc-la{--tc:#17806f;--tcbg:#e1f3ef}
+.tc-st{--tc:#b0621c;--tcbg:#faeadb}
+@media (prefers-color-scheme: dark){
+  .tc-ana{--tc:#6fb1de;--tcbg:#17283a}
+  .tc-la{--tc:#5fd0b9;--tcbg:#14302b}
+  .tc-st{--tc:#f0a966;--tcbg:#3a2616}
+}
+.lhead{display:flex;gap:14px;align-items:center;margin:6px 0 14px}
+.lemoji{width:56px;height:56px;border-radius:16px;background:var(--tcbg);display:grid;place-items:center;font-size:1.9rem;flex:none}
+.memo{background:var(--tcbg);border-left:4px solid var(--tc);border-radius:10px;padding:10px 14px;font-weight:600;margin:0 0 6px}
+.lcard{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--tc);border-radius:12px;padding:14px 18px;margin:12px 0}
+.lcard p{margin:.3em 0}
+.lt{font-weight:700;margin-bottom:6px;font-family:Georgia,serif;font-size:1.05rem}
+.rule{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;padding:8px 0;border-top:1px dashed var(--line);align-items:center}
+.lt + .rule{border-top:0;padding-top:2px}
+.rl{color:var(--muted);font-size:.88rem}
+.rf{font-size:1.05rem;overflow-x:auto}
+details.more{border-top:1px dashed var(--line);padding:8px 0 0;margin-top:4px}
+details.more summary{color:var(--tc);font-weight:600}
+.extask{background:var(--tcbg);border-radius:10px;padding:10px 14px;margin-bottom:6px}
+.lstep{display:flex;gap:10px;align-items:flex-start;margin:8px 0;animation:pop .25s ease}
+.sn{flex:none;width:24px;height:24px;border-radius:50%;background:var(--tc);color:var(--bg);font-size:.8rem;font-weight:700;display:grid;place-items:center;margin-top:2px}
+.lc-bad{border-left-color:var(--bad)}
+.lc-mini{border-left-color:var(--accent)}
+@keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.lstep{animation:none}}
+@media (max-width:520px){.stats{grid-template-columns:1fr 1fr 1fr}.stat b{font-size:1.2rem}.rule{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ==GEN-START==
+const T = String.raw;
+const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[rnd(0, a.length - 1)];
+const nz = (a, b) => { let v; do { v = rnd(a, b); } while (v === 0); return v; };
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const par = n => n < 0 ? `(${n})` : `${n}`;
+const tn = n => String(Math.round(n * 1e6) / 1e6).replace('.', '{,}');
+const fm = (n, d = 2) => String(Math.round(n * 10 ** d) / 10 ** d).replace('.', ',');
+const NL = ' \\\\ ';
+const mat = rows => T`\begin{pmatrix}${rows.map(r => r.join(' & ')).join(NL)}\end{pmatrix}`;
+const vec = a => mat(a.map(x => [x]));
+const mk = (q, ans, d, steps, hint, o = {}) => ({
+  q, ans, d, steps, hint,
+  tol: o.tol ?? (d > 0 ? 0.5 * 10 ** -d + 1e-9 : 1e-6),
+  note: o.note || (d > 0 ? `Gerundet auf ${d} Nachkommastellen (Komma oder Punkt, auch Brüche wie 3/4 sind erlaubt).` : 'Ganze Zahl (auch Brüche und Dezimalzahlen werden erkannt).')
+});
+const polyTex = (terms, v = 'x') => {
+  let s = '';
+  terms.forEach(t => {
+    if (t.c === 0) return;
+    const a = Math.abs(t.c);
+    let body;
+    if (t.e === 0) body = String(a);
+    else body = (a === 1 ? '' : String(a)) + (t.e === 1 ? v : `${v}^{${t.e}}`);
+    if (s === '') s = (t.c < 0 ? '-' : '') + body;
+    else s += (t.c < 0 ? ' - ' : ' + ') + body;
+  });
+  return s || '0';
+};
+const binom = (n, k) => { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return Math.round(r); };
+const fact = n => n <= 1 ? 1 : n * fact(n - 1);
+
+const GEN = {};
+
+/* ---------- Analysis ---------- */
+GEN.ana_poly = () => {
+  const exps = shuffle([1, 2, 3, 4, 5]).slice(0, rnd(2, 3)).sort((a, b) => b - a);
+  const terms = exps.map(e => ({ c: nz(-5, 5), e }));
+  terms.push({ c: nz(-6, 6), e: 0 });
+  const x0 = pick([-2, -1, 1, 2, 3]);
+  const d = terms.filter(t => t.e > 0).map(t => ({ c: t.c * t.e, e: t.e - 1 }));
+  const val = d.reduce((s, t) => s + t.c * Math.pow(x0, t.e), 0);
+  return mk(
+    T`<p>Berechne den Wert der Ableitung an der Stelle $x_0=${x0}$.</p>$$f(x)=${polyTex(terms)}$$`,
+    val, 0,
+    [T`Potenzregel gliedweise: $f'(x)=${polyTex(d)}$`,
+     T`Einsetzen: $f'(${x0})=${d.map(t => par(t.c * Math.pow(x0, t.e))).join(' + ')}=${val}$`],
+    'Jeden Summanden mit der Potenzregel ableiten (Exponent nach vorne, um 1 verringern), Konstanten fallen weg. Erst danach einsetzen.'
+  );
+};
+
+GEN.ana_chain = () => {
+  let a, b, n, x0, inner;
+  do { a = pick([2, 3, 4, -2, -3]); b = nz(-3, 3); n = rnd(2, 4); x0 = pick([-1, 0, 1, 2]); inner = a * x0 + b; } while (inner === 0 || Math.abs(n * a * Math.pow(inner, n - 1)) > 400);
+  const val = n * a * Math.pow(inner, n - 1);
+  const in_ = polyTex([{ c: a, e: 1 }, { c: b, e: 0 }]);
+  return mk(
+    T`<p>Berechne $f'(${x0})$.</p>$$f(x)=(${in_})^{${n}}$$`,
+    val, 0,
+    [T`Kettenregel: äußere Ableitung mal innere Ableitung: $f'(x)=${n}\cdot(${in_})^{${n - 1}}\cdot ${par(a)}$`,
+     T`Innerer Wert bei $x_0=${x0}$: $${a}\cdot${par(x0)}+${par(b)}=${inner}$`,
+     T`$f'(${x0})=${n}\cdot ${par(inner)}^{${n - 1}}\cdot ${par(a)}=${val}$`],
+    'Äußere Funktion: Potenz. Innere Funktion: das, was in der Klammer steht. Die innere Ableitung ist der Faktor vor x.'
+  );
+};
+
+GEN.ana_product = () => {
+  const a = nz(-4, 4), b = nz(-3, 3), c = nz(-4, 4), x0 = pick([-2, -1, 1, 2, 3]);
+  const u = x0 * x0 + a, v = b * x0 + c;
+  const val = 2 * x0 * v + u * b;
+  const vTex = polyTex([{ c: b, e: 1 }, { c: c, e: 0 }]);
+  const uTex = polyTex([{ c: 1, e: 2 }, { c: a, e: 0 }]);
+  return mk(
+    T`<p>Berechne $f'(${x0})$.</p>$$f(x)=(${uTex})\cdot(${vTex})$$`,
+    val, 0,
+    [T`Produktregel mit $u=${uTex}$, $v=${vTex}$: $f'=u'v+uv'$ mit $u'=2x$, $v'=${b}$`,
+     T`Werte bei $x_0=${x0}$: $u=${u}$, $v=${v}$, $u'=${2 * x0}$, $v'=${b}$`,
+     T`$f'(${x0})=${par(2 * x0)}\cdot ${par(v)}+${par(u)}\cdot ${par(b)}=${val}$`],
+    'Produktregel: (u·v)\' = u\'·v + u·v\'. Beide Faktoren getrennt ableiten, dann erst einsetzen.'
+  );
+};
+
+GEN.ana_integral = () => {
+  const a = 3 * nz(-2, 2), b = 2 * nz(-3, 3), c = nz(-4, 4);
+  const p = rnd(0, 1), q = p + rnd(1, 2);
+  const F = x => (a / 3) * x ** 3 + (b / 2) * x ** 2 + c * x;
+  const val = F(q) - F(p);
+  const f = polyTex([{ c: a, e: 2 }, { c: b, e: 1 }, { c: c, e: 0 }]);
+  const Ft = polyTex([{ c: a / 3, e: 3 }, { c: b / 2, e: 2 }, { c: c, e: 1 }]);
+  return mk(
+    T`<p>Berechne das bestimmte Integral.</p>$$\int_{${p}}^{${q}} (${f})\,dx$$`,
+    val, 0,
+    [T`Stammfunktion: $F(x)=${Ft}$`,
+     T`$F(${q})-F(${p})=${par(F(q))}-${par(F(p))}=${val}$`],
+    'Jeden Term mit x^n zu x^(n+1)/(n+1) aufleiten. Dann Obergrenze minus Untergrenze.'
+  );
+};
+
+GEN.ana_extrem = () => {
+  const k = rnd(1, 3), c = nz(-5, 5);
+  const f = polyTex([{ c: 1, e: 3 }, { c: -3 * k * k, e: 1 }, { c: c, e: 0 }]);
+  const val = c - 2 * k ** 3;
+  return mk(
+    T`<p>Die Funktion hat ein lokales Minimum. Wie groß ist der <b>y-Wert</b> des Minimums?</p>$$f(x)=${f}$$`,
+    val, 0,
+    [T`$f'(x)=3x^2-${3 * k * k}=0 \Rightarrow x=\pm ${k}$`,
+     T`$f''(x)=6x$: bei $x=${k}$ ist $f''=${6 * k}>0$, also Minimum (bei $x=-${k}$ ein Maximum)`,
+     T`$f(${k})=${k ** 3}-${3 * k * k}\cdot ${k}+${par(c)}=${val}$`],
+    'f\'(x)=0 setzen, dann mit f\'\'(x) entscheiden (positiv = Minimum). Den y-Wert über f(x) berechnen, nicht über f\'.'
+  );
+};
+
+GEN.ana_limit = () => {
+  if (Math.random() < 0.6) {
+    const a = nz(-6, 6), c = nz(-4, 4), b = nz(-5, 5), d = nz(-5, 5);
+    const num = polyTex([{ c: a, e: 2 }, { c: b, e: 1 }]);
+    const den = polyTex([{ c: c, e: 2 }, { c: d, e: 0 }]);
+    return mk(
+      T`<p>Bestimme den Grenzwert.</p>$$\lim_{x\to\infty}\frac{${num}}{${den}}$$`,
+      a / c, 2,
+      [T`Höchste Potenz $x^2$ ausklammern und kürzen: $\frac{${a}+${par(b)}/x}{${c}+${par(d)}/x^2}$`,
+       T`Für $x\to\infty$ gehen $1/x$ und $1/x^2$ gegen 0: Grenzwert $=\frac{${a}}{${c}}=${fm(a / c, 3)}$`],
+      'Zähler und Nenner durch die höchste Potenz von x teilen. Nur die Koeffizienten der höchsten Potenzen bleiben übrig.'
+    );
+  }
+  const a = nz(-5, 5), b = nz(-5, 5);
+  return mk(
+    T`<p>Bestimme den Grenzwert.</p>$$\lim_{x\to 0}\frac{\sin(${a}x)}{${b}x}$$`,
+    a / b, 2,
+    [T`Standardgrenzwert $\lim_{u\to0}\frac{\sin u}{u}=1$, mit $u=${a}x$ erweitern:`,
+     T`$\frac{\sin(${a}x)}{${b}x}=\frac{${a}}{${b}}\cdot\frac{\sin(${a}x)}{${a}x}\to\frac{${a}}{${b}}=${fm(a / b, 3)}$`],
+    'Erweitere so, dass im Nenner dasselbe Argument wie im Sinus steht, dann greift sin(u)/u → 1.'
+  );
+};
+
+GEN.ana_exp = () => {
+  const k = pick([2, 3, 4, 0.5]), m = pick([5, 10, 20, 50, 100]);
+  const x = Math.log(m) / k;
+  return mk(
+    T`<p>Löse nach $x$ auf (Taschenrechner erlaubt).</p>$$e^{${tn(k)}x}=${m}$$`,
+    x, 3,
+    [T`Logarithmus beider Seiten: $${tn(k)}x=\ln(${m})\approx ${fm(Math.log(m), 4)}$`,
+     T`$x=\frac{\ln(${m})}{${tn(k)}}\approx ${fm(x, 3)}$`],
+    'Wende ln auf beide Seiten an, ln(e^u)=u. Dann durch den Faktor vor x teilen.'
+  );
+};
+
+/* ---------- Lineare Algebra ---------- */
+GEN.la_dot = () => {
+  const u = [rnd(-4, 4), rnd(-4, 4), nz(-4, 4)], v = [rnd(-4, 4), nz(-4, 4), rnd(-4, 4)];
+  const val = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  return mk(
+    T`<p>Berechne das Skalarprodukt.</p>$$${vec(u)}\cdot${vec(v)}$$`,
+    val, 0,
+    [T`$${par(u[0])}\cdot${par(v[0])}+${par(u[1])}\cdot${par(v[1])}+${par(u[2])}\cdot${par(v[2])}=${val}$`],
+    'Komponentenweise multiplizieren und addieren. Das Ergebnis ist eine Zahl, kein Vektor.'
+  );
+};
+
+GEN.la_norm = () => {
+  const tr = pick([[1, 2, 2], [2, 3, 6], [2, 4, 4], [1, 4, 8], [4, 4, 7], [2, 6, 9], [6, 6, 7], [3, 4, 12]]);
+  const v = shuffle(tr).map(x => x * pick([-1, 1]));
+  const s = v.reduce((a, x) => a + x * x, 0);
+  const val = Math.round(Math.sqrt(s));
+  return mk(
+    T`<p>Berechne die Länge (den Betrag) des Vektors.</p>$$\left|${vec(v)}\right|$$`,
+    val, 0,
+    [T`$\sqrt{${par(v[0])}^2+${par(v[1])}^2+${par(v[2])}^2}=\sqrt{${v.map(x => x * x).join('+')}}=\sqrt{${s}}=${val}$`],
+    'Komponenten quadrieren, addieren, Wurzel ziehen. Das Ergebnis ist hier eine ganze Zahl.'
+  );
+};
+
+GEN.la_det2 = () => {
+  const [a, b, c, d] = [rnd(-5, 5), rnd(-5, 5), rnd(-5, 5), rnd(-5, 5)];
+  const val = a * d - b * c;
+  return mk(
+    T`<p>Berechne die Determinante.</p>$$\det${mat([[a, b], [c, d]])}$$`,
+    val, 0,
+    [T`$ad-bc=${par(a)}\cdot${par(d)}-${par(b)}\cdot${par(c)}=${val}$`],
+    'Hauptdiagonale minus Nebendiagonale: ad − bc.'
+  );
+};
+
+GEN.la_det3 = () => {
+  const m = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(-3, 3)));
+  const [[a, b, c], [d, e, f], [g, h, i]] = m;
+  const M1 = e * i - f * h, M2 = d * i - f * g, M3 = d * h - e * g;
+  const val = a * M1 - b * M2 + c * M3;
+  return mk(
+    T`<p>Berechne die Determinante.</p>$$\det${mat(m)}$$`,
+    val, 0,
+    [T`Entwicklung nach der ersten Zeile: $a(ei-fh)-b(di-fg)+c(dh-eg)$`,
+     T`$${par(a)}\cdot(${par(M1)})-${par(b)}\cdot(${par(M2)})+${par(c)}\cdot(${par(M3)})=${val}$`],
+    'Nach der ersten Zeile entwickeln, Vorzeichen +, −, +. Die drei 2×2-Unterdeterminanten zuerst ausrechnen.'
+  );
+};
+
+GEN.la_matmul = () => {
+  const A = Array.from({ length: 2 }, () => [rnd(-3, 4), rnd(-3, 4)]);
+  const B = Array.from({ length: 2 }, () => [rnd(-3, 4), rnd(-3, 4)]);
+  const i = rnd(0, 1), j = rnd(0, 1);
+  const val = A[i][0] * B[0][j] + A[i][1] * B[1][j];
+  return mk(
+    T`<p>Berechne den Eintrag in <b>Zeile ${i + 1}, Spalte ${j + 1}</b> des Produkts $A\cdot B$.</p>$$A=${mat(A)},\quad B=${mat(B)}$$`,
+    val, 0,
+    [T`Zeile ${i + 1} von $A$ mal Spalte ${j + 1} von $B$:`,
+     T`$${par(A[i][0])}\cdot${par(B[0][j])}+${par(A[i][1])}\cdot${par(B[1][j])}=${val}$`],
+    'Eintrag (i,j) = Zeile i der linken Matrix mal Spalte j der rechten Matrix (wie ein Skalarprodukt).'
+  );
+};
+
+GEN.la_system = () => {
+  let a, b, c, d, x, y;
+  do { a = nz(-4, 4); b = nz(-4, 4); c = nz(-4, 4); d = nz(-4, 4); } while (a * d - b * c === 0);
+  x = rnd(-4, 4); y = rnd(-4, 4);
+  const e = a * x + b * y, f = c * x + d * y;
+  const D = a * d - b * c, Dx = e * d - b * f, Dy = a * f - e * c;
+  const lin = (p, q) => (p === 1 ? '' : p === -1 ? '-' : p) + 'x' + (q < 0 ? ' - ' : ' + ') + (Math.abs(q) === 1 ? '' : Math.abs(q)) + 'y';
+  const askX = Math.random() < 0.5;
+  return mk(
+    T`<p>Löse das Gleichungssystem und gib <b>${askX ? 'x' : 'y'}</b> an.</p>$$\begin{aligned}${lin(a, b)} &= ${e}\\ ${lin(c, d)} &= ${f}\end{aligned}$$`,
+    askX ? x : y, 0,
+    [T`Cramersche Regel: $D=ad-bc=${par(a)}\cdot${par(d)}-${par(b)}\cdot${par(c)}=${D}$`,
+     T`$D_x=${par(e)}\cdot${par(d)}-${par(b)}\cdot${par(f)}=${Dx}$, $D_y=${par(a)}\cdot${par(f)}-${par(e)}\cdot${par(c)}=${Dy}$`,
+     T`$x=D_x/D=${x}$, $y=D_y/D=${y}$`],
+    'Entweder eine Gleichung so multiplizieren, dass beim Addieren eine Variable wegfällt, oder mit der Cramerschen Regel rechnen.'
+  );
+};
+
+GEN.la_eigen = () => {
+  let l1, l2;
+  do { l1 = rnd(-2, 4); l2 = rnd(-2, 4); } while (l1 === l2);
+  const p = pick([1, -1, 2]), q = 1, pq = p * q;
+  const A = [[l1 * (1 + pq) - pq * l2, p * (l2 - l1)], [q * (1 + pq) * (l1 - l2), (1 + pq) * l2 - pq * l1]];
+  const tr = A[0][0] + A[1][1], dt = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+  const big = Math.random() < 0.5;
+  const ans = big ? Math.max(l1, l2) : Math.min(l1, l2);
+  const disc = tr * tr - 4 * dt;
+  return mk(
+    T`<p>Bestimme den ${big ? '<b>größeren</b>' : '<b>kleineren</b>'} Eigenwert (beide sind ganzzahlig).</p>$$A=${mat(A)}$$`,
+    ans, 0,
+    [T`Spur $=${tr}$, Determinante $=${dt}$. Charakteristisches Polynom: $\lambda^2-${par(tr)}\lambda+${par(dt)}=0$`,
+     T`$\lambda=\frac{${tr}\pm\sqrt{${disc}}}{2}=\frac{${tr}\pm ${Math.round(Math.sqrt(disc))}}{2}$, also $\lambda_1=${Math.min(l1, l2)}$, $\lambda_2=${Math.max(l1, l2)}$`],
+    'Für 2×2: λ² − (Spur)·λ + (Determinante) = 0 lösen. Probe: Summe der Eigenwerte = Spur, Produkt = Determinante.'
+  );
+};
+
+/* ---------- Statistik ---------- */
+GEN.st_mean = () => {
+  const n = rnd(5, 8), xs = Array.from({ length: n }, () => rnd(1, 20));
+  const sorted = xs.slice().sort((a, b) => a - b);
+  const sum = xs.reduce((a, b) => a + b, 0);
+  if (Math.random() < 0.5) {
+    return mk(
+      T`<p>Berechne den <b>Mittelwert</b> des Datensatzes:</p><p>${xs.join(', ')}</p>`,
+      sum / n, 2,
+      [T`Summe $=${sum}$, Anzahl $n=${n}$`, T`$\bar x=\frac{${sum}}{${n}}=${fm(sum / n, 3)}$`],
+      'Alle Werte addieren und durch die Anzahl teilen.'
+    );
+  }
+  const med = n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+  return mk(
+    T`<p>Berechne den <b>Median</b> des Datensatzes:</p><p>${xs.join(', ')}</p>`,
+    med, 1,
+    [T`Sortiert: ${sorted.join(', ')}`,
+     n % 2 ? T`Ungerade Anzahl ($n=${n}$): mittlerer Wert $=${med}$` : T`Gerade Anzahl ($n=${n}$): Mittel der beiden mittleren Werte $\frac{${sorted[n / 2 - 1]}+${sorted[n / 2]}}{2}=${fm(med, 2)}$`],
+    'Erst sortieren. Bei gerader Anzahl den Durchschnitt der beiden mittleren Werte nehmen.'
+  );
+};
+
+GEN.st_var = () => {
+  let xs, sum;
+  const n = 5;
+  let tries = 0;
+  do { xs = Array.from({ length: n }, () => rnd(2, 12)); sum = xs.reduce((a, b) => a + b, 0); tries++; } while (sum % n !== 0 && tries < 200);
+  const m = sum / n;
+  const ss = xs.reduce((a, x) => a + (x - m) ** 2, 0);
+  const val = ss / (n - 1);
+  return mk(
+    T`<p>Berechne die <b>Stichprobenvarianz</b> $s^2$ (Division durch $n-1$) des Datensatzes:</p><p>${xs.join(', ')}</p>`,
+    val, 2,
+    [T`Mittelwert $\bar x=${fm(m, 3)}$`,
+     T`Abweichungsquadrate: ${xs.map(x => '$(' + x + '-' + fm(m, 3) + ')^2=' + fm((x - m) ** 2, 3) + '$').join(', ')}`,
+     T`Summe $=${fm(ss, 3)}$, also $s^2=\frac{${fm(ss, 3)}}{${n - 1}}=${fm(val, 3)}$`],
+    'Mittelwert bestimmen, Abweichungen quadrieren, summieren, durch n−1 (nicht n) teilen.'
+  );
+};
+
+GEN.st_comb = () => {
+  if (Math.random() < 0.5) {
+    const n = rnd(5, 10), k = rnd(2, 4);
+    return mk(
+      T`<p>Aus ${n} Personen soll ein Team aus ${k} Personen ausgewählt werden (Reihenfolge egal). Wie viele verschiedene Teams gibt es?</p>`,
+      binom(n, k), 0,
+      [T`$\binom{${n}}{${k}}=\frac{${n}!}{${k}!\,${n - k}!}=${binom(n, k)}$`],
+      'Auswahl ohne Reihenfolge: Binomialkoeffizient n über k.'
+    );
+  }
+  const n = rnd(5, 8), k = rnd(2, 3);
+  const val = fact(n) / fact(n - k);
+  return mk(
+    T`<p>${n} Personen laufen um die Plätze 1 bis ${k}. Wie viele verschiedene Ergebnisse (mit Reihenfolge, ohne Wiederholung) sind möglich?</p>`,
+    val, 0,
+    [T`$${Array.from({ length: k }, (_, i) => n - i).join('\\cdot ')}=${val}$`],
+    'Mit Reihenfolge: für Platz 1 gibt es n Möglichkeiten, für Platz 2 noch n−1, usw.'
+  );
+};
+
+GEN.st_bayes = () => {
+  const prev = pick([0.01, 0.02, 0.05, 0.1]), sens = pick([0.9, 0.95, 0.98, 0.99]), fpr = pick([0.02, 0.05, 0.1]);
+  const tp = prev * sens, fp = (1 - prev) * fpr;
+  const val = tp / (tp + fp) * 100;
+  const pc = x => fm(x * 100, 1).replace(/,0$/, '');
+  return mk(
+    T`<p>Eine Krankheit hat eine Prävalenz von ${pc(prev)} %. Ein Test erkennt Erkrankte mit ${pc(sens)} % Wahrscheinlichkeit und liefert bei Gesunden in ${pc(fpr)} % der Fälle fälschlich „positiv“. Wie wahrscheinlich ist es, dass jemand mit positivem Test tatsächlich erkrankt? Antwort in Prozent.</p>`,
+    val, 1,
+    [T`$P(\text{krank, positiv})=${tn(prev)}\cdot ${tn(sens)}=${tn(tp)}$`,
+     T`$P(\text{gesund, positiv})=${tn(1 - prev)}\cdot ${tn(fpr)}=${tn(fp)}$`,
+     T`$P(\text{krank}\mid\text{positiv})=\frac{${tn(tp)}}{${tn(tp)}+${tn(fp)}}\approx ${fm(val, 2)}\,\%$`],
+    'Bayes: Anteil der „richtig positiven“ an allen positiv Getesteten. Stell dir z. B. 10 000 Personen vor und zähle ab.',
+    { note: 'In Prozent, auf eine Nachkommastelle gerundet (ohne %-Zeichen).' }
+  );
+};
+
+GEN.st_binom = () => {
+  const n = rnd(5, 10), p = pick([0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6]), k = rnd(1, Math.min(n, 5));
+  const c = binom(n, k);
+  const val = c * Math.pow(p, k) * Math.pow(1 - p, n - k);
+  return mk(
+    T`<p>Eine Zufallsvariable $X$ ist binomialverteilt mit $n=${n}$ und $p=${tn(p)}$. Berechne $P(X=${k})$.</p>`,
+    val, 3,
+    [T`$P(X=${k})=\binom{${n}}{${k}}\cdot ${tn(p)}^{${k}}\cdot ${tn(1 - p)}^{${n - k}}$`,
+     T`$=${c}\cdot ${fm(Math.pow(p, k), 5)}\cdot ${fm(Math.pow(1 - p, n - k), 5)}\approx ${fm(val, 4)}$`],
+    'Binomialkoeffizient mal p^k mal (1−p)^(n−k). Taschenrechner erlaubt.'
+  );
+};
+
+GEN.st_ev = () => {
+  const m = rnd(3, 4);
+  let counts = Array(m).fill(1);
+  for (let i = 0; i < 10 - m; i++) counts[rnd(0, m - 1)]++;
+  const probs = counts.map(c => c / 10);
+  const xs = shuffle([-10, -5, 0, 2, 5, 10, 20, 50]).slice(0, m).sort((a, b) => a - b);
+  const val = xs.reduce((s, x, i) => s + x * probs[i], 0);
+  return mk(
+    T`<p>Berechne den Erwartungswert $E[X]$.</p>$$\begin{array}{c|${'c'.repeat(m)}} x & ${xs.join(' & ')}\\ \hline P(X=x) & ${probs.map(tn).join(' & ')}\end{array}$$`,
+    val, 2,
+    [T`$E[X]=${xs.map((x, i) => par(x) + '\\cdot ' + tn(probs[i])).join(' + ')}=${fm(val, 3)}$`],
+    'Jeden Wert mit seiner Wahrscheinlichkeit multiplizieren und alles aufsummieren.'
+  );
+};
+
+GEN.st_z = () => {
+  const mu = pick([50, 100, 170, 500]), sg = pick([5, 10, 15, 20]);
+  const r = Math.random();
+  if (r < 0.4) {
+    const z = pick([-2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5]), x = mu + sg * z;
+    return mk(
+      T`<p>$X$ ist normalverteilt mit $\mu=${mu}$ und $\sigma=${sg}$. Berechne den z-Wert von $x=${x}$.</p>`,
+      z, 2,
+      [T`$z=\frac{x-\mu}{\sigma}=\frac{${x}-${mu}}{${sg}}=${fm(z, 2)}$`],
+      'z gibt an, um wie viele Standardabweichungen x vom Mittelwert entfernt liegt.'
+    );
+  }
+  if (r < 0.75) {
+    const z = pick([-2, -1, 1, 2, 3]), x = mu + sg * z;
+    return mk(
+      T`<p>$X$ ist normalverteilt mit $\mu=${mu}$ und $\sigma=${sg}$. Welcher Wert $x$ gehört zu $z=${z}$?</p>`,
+      x, 0,
+      [T`$x=\mu+z\cdot\sigma=${mu}+${par(z)}\cdot ${sg}=${x}$`],
+      'Umstellen von z = (x − μ)/σ nach x.'
+    );
+  }
+  const k = pick([1, 2, 3]), ans = { 1: 68, 2: 95, 3: 99.7 }[k];
+  return mk(
+    T`<p>Bei einer Normalverteilung: Wie viel Prozent der Werte liegen ungefähr innerhalb von $\pm ${k}\sigma$ um den Mittelwert? (68-95-99,7-Regel)</p>`,
+    ans, 1,
+    [T`Faustregel: $\pm 1\sigma\approx 68\,\%$, $\pm 2\sigma\approx 95\,\%$, $\pm 3\sigma\approx 99{,}7\,\%$. Gesucht: ${fm(ans, 1)} %`],
+    'Die drei Faustwerte: 68 %, 95 %, 99,7 %.',
+    { tol: 0.5, note: 'In Prozent (ohne %-Zeichen). Gerundete Faustwerte genügen.' }
+  );
+};
+
+/* ---------- Lektionen ---------- */
+const L = {};
+L.ana_poly = T`<p><b>Potenzregel:</b> $(c\,x^n)'=c\cdot n\cdot x^{n-1}$. Summen leitet man gliedweise ab, Konstanten fallen weg.</p>
+<p><b>Beispiel:</b> $f(x)=4x^3-5x+2$ ergibt $f'(x)=12x^2-5$. Dann ist $f'(2)=12\cdot4-5=43$.</p>`;
+L.ana_chain = T`<p><b>Kettenregel:</b> $[g(h(x))]'=g'(h(x))\cdot h'(x)$, also äußere Ableitung (an der inneren Funktion ausgewertet) mal innere Ableitung.</p>
+<p><b>Beispiel:</b> $f(x)=(3x-1)^4$ ergibt $f'(x)=4(3x-1)^3\cdot 3$. Dann ist $f'(1)=4\cdot 8\cdot 3=96$.</p>`;
+L.ana_product = T`<p><b>Produktregel:</b> $(u\cdot v)'=u'\cdot v+u\cdot v'$.</p>
+<p><b>Beispiel:</b> $f(x)=(x^2+1)(2x-3)$ ergibt $f'(x)=2x(2x-3)+(x^2+1)\cdot 2$. Dann ist $f'(1)=2\cdot(-1)+2\cdot 2=2$.</p>`;
+L.ana_integral = T`<p><b>Hauptsatz:</b> $\int_p^q f(x)\,dx=F(q)-F(p)$ mit $F'=f$. Aufleiten: $\int x^n\,dx=\frac{x^{n+1}}{n+1}$.</p>
+<p><b>Beispiel:</b> $\int_0^2(3x^2+2x)\,dx=\left[x^3+x^2\right]_0^2=8+4-0=12$.</p>`;
+L.ana_extrem = T`<p><b>Extremstellen:</b> notwendig ist $f'(x)=0$. Hinreichend: $f''(x)>0$ ergibt ein Minimum, $f''(x)<0$ ein Maximum.</p>
+<p><b>Beispiel:</b> $f(x)=x^3-3x$ hat $f'(x)=3x^2-3=0$, also $x=\pm1$. Wegen $f''(1)=6>0$ liegt bei $x=1$ ein Minimum mit $f(1)=-2$.</p>`;
+L.ana_limit = T`<p><b>Gebrochen-rationale Funktionen für $x\to\infty$:</b> höchste Potenz in Zähler und Nenner ausklammern, kürzen. Übrig bleibt das Verhältnis der führenden Koeffizienten (bei gleichem Grad).</p>
+<p><b>Standardgrenzwert:</b> $\lim_{u\to0}\frac{\sin u}{u}=1$.</p>
+<p><b>Beispiel:</b> $\lim_{x\to\infty}\frac{3x^2+x}{2x^2+5}=\frac32$. Und $\lim_{x\to0}\frac{\sin(4x)}{2x}=\frac42=2$.</p>`;
+L.ana_exp = T`<p><b>Umkehrung:</b> $e^u=m\iff u=\ln m$ (für $m>0$).</p>
+<p><b>Beispiel:</b> $e^{2x}=7$ ergibt $2x=\ln 7\approx1{,}946$, also $x\approx0{,}973$.</p>`;
+L.la_dot = T`<p><b>Skalarprodukt:</b> $\vec a\cdot\vec b=a_1b_1+a_2b_2+a_3b_3$. Ergebnis ist eine Zahl. Es gilt $\vec a\cdot\vec b=0\iff$ die Vektoren stehen senkrecht aufeinander.</p>
+<p><b>Beispiel:</b> $(1,2,3)\cdot(4,-1,2)=4-2+6=8$.</p>`;
+L.la_norm = T`<p><b>Betrag:</b> $|\vec v|=\sqrt{v_1^2+v_2^2+v_3^2}$, die Länge des Vektors (Pythagoras im Raum).</p>
+<p><b>Beispiel:</b> $|(2,3,6)|=\sqrt{4+9+36}=\sqrt{49}=7$.</p>`;
+L.la_det2 = T`<p><b>2×2-Determinante:</b> $\det\begin{pmatrix}a&b\\c&d\end{pmatrix}=ad-bc$. Ist sie 0, ist die Matrix nicht invertierbar.</p>
+<p><b>Beispiel:</b> $\det\begin{pmatrix}3&1\\2&4\end{pmatrix}=12-2=10$.</p>`;
+L.la_det3 = T`<p><b>Laplace-Entwicklung</b> nach der ersten Zeile: $\det=a(ei-fh)-b(di-fg)+c(dh-eg)$ für die Matrix mit den Zeilen $(a,b,c)$, $(d,e,f)$, $(g,h,i)$. Vorzeichen: + − +.</p>
+<p><b>Beispiel:</b> Zeilen $(1,2,0)$, $(0,1,3)$, $(2,0,1)$: $1\cdot(1-0)-2\cdot(0-6)+0=13$.</p>`;
+L.la_matmul = T`<p><b>Matrixprodukt:</b> $(AB)_{ij}=\sum_k a_{ik}b_{kj}$, also Zeile $i$ von $A$ mal Spalte $j$ von $B$. Die Reihenfolge ist wichtig: im Allgemeinen gilt $AB\neq BA$.</p>
+<p><b>Beispiel:</b> $A=\begin{pmatrix}1&2\\3&4\end{pmatrix}$, $B=\begin{pmatrix}0&1\\5&2\end{pmatrix}$: $(AB)_{21}=3\cdot0+4\cdot5=20$.</p>`;
+L.la_system = T`<p><b>2×2-System</b> $ax+by=e$, $cx+dy=f$: Mit $D=ad-bc\neq0$ gilt $x=\frac{ed-bf}{D}$ und $y=\frac{af-ec}{D}$ (Cramersche Regel).</p>
+<p><b>Beispiel:</b> $2x+y=7$, $x-y=2$: $D=-3$, $x=\frac{-9}{-3}=3$, $y=\frac{-3}{-3}=1$.</p>`;
+L.la_eigen = T`<p><b>Eigenwerte:</b> $A\vec v=\lambda\vec v$ mit $\vec v\neq\vec 0$. Sie lösen $\det(A-\lambda I)=0$. Für 2×2 heißt das $\lambda^2-\operatorname{Spur}(A)\,\lambda+\det A=0$.</p>
+<p><b>Beispiel:</b> $A=\begin{pmatrix}4&1\\2&3\end{pmatrix}$: Spur 7, $\det=10$, also $\lambda^2-7\lambda+10=0$ und $\lambda\in\{2,5\}$.</p>`;
+L.st_mean = T`<p><b>Mittelwert:</b> $\bar x=\frac1n\sum x_i$. <b>Median:</b> mittlerer Wert der sortierten Liste (bei gerader Anzahl der Durchschnitt der zwei mittleren). Der Median ist robuster gegenüber Ausreißern.</p>
+<p><b>Beispiel:</b> 2, 3, 7, 8, 10 hat Mittelwert $30/5=6$ und Median 7.</p>`;
+L.st_var = T`<p><b>Stichprobenvarianz:</b> $s^2=\frac{1}{n-1}\sum(x_i-\bar x)^2$. Die Standardabweichung ist $s=\sqrt{s^2}$. Der Nenner $n-1$ korrigiert, dass $\bar x$ aus denselben Daten geschätzt wurde.</p>
+<p><b>Beispiel:</b> 2, 4, 6: $\bar x=4$, Quadratsumme $4+0+4=8$, also $s^2=8/2=4$.</p>`;
+L.st_comb = T`<p><b>Ohne Reihenfolge:</b> $\binom nk=\frac{n!}{k!\,(n-k)!}$. <b>Mit Reihenfolge, ohne Wiederholung:</b> $\frac{n!}{(n-k)!}=n(n-1)\cdots(n-k+1)$.</p>
+<p><b>Beispiel:</b> 2 aus 5 ohne Reihenfolge: $\binom52=10$. Mit Reihenfolge: $5\cdot4=20$.</p>`;
+L.st_bayes = T`<p><b>Satz von Bayes:</b> $P(A\mid B)=\frac{P(B\mid A)\,P(A)}{P(B\mid A)\,P(A)+P(B\mid\bar A)\,P(\bar A)}$.</p>
+<p><b>Beispiel:</b> Prävalenz 1 %, Sensitivität 90 %, Falsch-positiv-Rate 10 %: $\frac{0{,}009}{0{,}009+0{,}099}\approx8{,}3\,\%$. Bei seltenen Ereignissen sind die meisten positiven Tests falsch positiv.</p>`;
+L.st_binom = T`<p><b>Binomialverteilung:</b> $P(X=k)=\binom nk p^k(1-p)^{n-k}$ für $n$ unabhängige Versuche mit Erfolgswahrscheinlichkeit $p$. Erwartungswert $np$.</p>
+<p><b>Beispiel:</b> $n=4$, $p=0{,}5$, $k=2$: $6\cdot0{,}25\cdot0{,}25=0{,}375$.</p>`;
+L.st_ev = T`<p><b>Erwartungswert:</b> $E[X]=\sum x_i\,P(X=x_i)$, der gewichtete Mittelwert der möglichen Werte.</p>
+<p><b>Beispiel:</b> Gewinn 0 € mit $P=0{,}8$, Gewinn 10 € mit $P=0{,}2$: $E[X]=0\cdot0{,}8+10\cdot0{,}2=2$ €.</p>`;
+L.st_z = T`<p><b>z-Wert:</b> $z=\frac{x-\mu}{\sigma}$ misst den Abstand zum Mittelwert in Standardabweichungen. Umgekehrt $x=\mu+z\sigma$.</p>
+<p><b>68-95-99,7-Regel:</b> Etwa 68 % der Werte liegen innerhalb $\pm1\sigma$, 95 % innerhalb $\pm2\sigma$, 99,7 % innerhalb $\pm3\sigma$.</p>
+<p><b>Beispiel:</b> $\mu=100$, $\sigma=15$, $x=130$ ergibt $z=2$.</p>`;
+
+/* ---------- Zusätzliche Varianten ---------- */
+const chk = c => { if (!c) throw new Error('Plausibilitätsprüfung fehlgeschlagen'); };
+const det3 = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+const lin3 = (c, v = ['x', 'y', 'z']) => {
+  let s = '';
+  c.forEach((k, i) => {
+    if (k === 0) return;
+    const a = Math.abs(k), body = (a === 1 ? '' : String(a)) + v[i];
+    s += s === '' ? (k < 0 ? '-' : '') + body : (k < 0 ? ' - ' : ' + ') + body;
+  });
+  return s;
+};
+const TRI3 = [[1, 2, 2], [2, 3, 6], [2, 4, 4], [1, 4, 8], [4, 4, 7], [2, 6, 9], [6, 6, 7], [3, 4, 12]];
+const TRI2 = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10], [7, 24, 25], [9, 12, 15]];
+const sgn3 = () => shuffle(pick(TRI3)).map(x => x * pick([-1, 1]));
+const len3 = v => Math.round(Math.sqrt(v.reduce((a, x) => a + x * x, 0)));
+const dtable = (xs, ps) => T`\begin{array}{c|${'c'.repeat(xs.length)}} x & ${xs.join(' & ')}\\ \hline P(X=x) & ${ps.map(tn).join(' & ')}\end{array}`;
+const probs10 = m => { const c = Array(m).fill(1); for (let i = 0; i < 10 - m; i++) c[rnd(0, m - 1)]++; return c.map(x => x / 10); };
+const frac = (n, d) => T`\frac{${n}}{${d}}`;
+
+const X = {};
+
+/* ----- Analysis ----- */
+X.ana_poly = [
+  () => {
+    const a = nz(-3, 3), b = nz(-4, 4), c = nz(-5, 5), d = nz(-6, 6), x0 = pick([-2, -1, 1, 2, 3]);
+    const val = 6 * a * x0 + 2 * b;
+    return mk(
+      T`<p>Berechne die <b>zweite</b> Ableitung an der Stelle $x_0=${x0}$.</p>$$f(x)=${polyTex([{ c: a, e: 3 }, { c: b, e: 2 }, { c: c, e: 1 }, { c: d, e: 0 }])}$$`,
+      val, 0,
+      [T`$f'(x)=${polyTex([{ c: 3 * a, e: 2 }, { c: 2 * b, e: 1 }, { c: c, e: 0 }])}$ und $f''(x)=${polyTex([{ c: 6 * a, e: 1 }, { c: 2 * b, e: 0 }])}$`,
+       T`$f''(${x0})=${par(6 * a)}\cdot ${par(x0)}+${par(2 * b)}=${val}$`],
+      'Zweimal nacheinander ableiten, erst danach einsetzen.'
+    );
+  },
+  () => {
+    const a = pick([1, 2, 3, -1, -2]), xs = nz(-4, 4), b = nz(-6, 6), c = nz(-5, 5);
+    const m = 2 * a * xs + b;
+    return mk(
+      T`<p>An welcher Stelle $x$ hat die Tangente an den Graphen die Steigung $${m}$?</p>$$f(x)=${polyTex([{ c: a, e: 2 }, { c: b, e: 1 }, { c: c, e: 0 }])}$$`,
+      xs, 0,
+      [T`$f'(x)=${polyTex([{ c: 2 * a, e: 1 }, { c: b, e: 0 }])}$`,
+       T`$f'(x)=${m}\Rightarrow ${polyTex([{ c: 2 * a, e: 1 }])}=${m - b}\Rightarrow x=${xs}$`],
+      'Ableitung bilden, gleich der gesuchten Steigung setzen und nach x auflösen.'
+    );
+  }
+];
+
+X.ana_chain = [
+  () => {
+    const a = nz(-3, 3), x0 = nz(-2, 2), b = -a * x0;
+    const ex = polyTex([{ c: a, e: 1 }, { c: b, e: 0 }]);
+    return mk(
+      T`<p>Berechne $f'(${x0})$.</p>$$f(x)=e^{${ex}}$$`,
+      a, 0,
+      [T`Kettenregel: $f'(x)=e^{${ex}}\cdot ${par(a)}$`,
+       T`Exponent bei $x_0=${x0}$: $${a}\cdot ${par(x0)}+${par(b)}=0$, also $e^0=1$ und $f'(${x0})=${a}$`],
+      'Die Ableitung von e^u ist e^u mal die Ableitung des Exponenten u.'
+    );
+  },
+  () => {
+    const a = nz(-4, 4), x0 = nz(-2, 2), b = -a * x0;
+    const arg = polyTex([{ c: a, e: 1 }, { c: b, e: 0 }]);
+    return mk(
+      T`<p>Berechne $f'(${x0})$.</p>$$f(x)=\sin(${arg})$$`,
+      a, 0,
+      [T`Kettenregel: $f'(x)=\cos(${arg})\cdot ${par(a)}$`,
+       T`Argument bei $x_0=${x0}$: $${a}\cdot ${par(x0)}+${par(b)}=0$, $\cos 0=1$, also $f'(${x0})=${a}$`],
+      'Die Ableitung von sin(u) ist cos(u) mal die innere Ableitung.'
+    );
+  },
+  () => {
+    const n = rnd(2, 3), a = nz(-3, 3), x0 = pick([-2, -1, 1, 2]);
+    const u = x0 * x0 + a;
+    const val = n * Math.pow(u, n - 1) * 2 * x0;
+    const inner = polyTex([{ c: 1, e: 2 }, { c: a, e: 0 }]);
+    return mk(
+      T`<p>Berechne $f'(${x0})$.</p>$$f(x)=(${inner})^{${n}}$$`,
+      val, 0,
+      [T`Kettenregel: $f'(x)=${n}\cdot(${inner})^{${n - 1}}\cdot 2x$`,
+       T`Bei $x_0=${x0}$: $${n}\cdot ${par(u)}^{${n - 1}}\cdot ${par(2 * x0)}=${val}$`],
+      'Äußere Ableitung (Potenz) mal innere Ableitung (hier 2x).'
+    );
+  }
+];
+
+X.ana_product = [
+  () => {
+    const a = nz(-5, 5), b = nz(-5, 5);
+    const lin = polyTex([{ c: a, e: 1 }, { c: b, e: 0 }]);
+    return mk(
+      T`<p>Berechne $f'(0)$.</p>$$f(x)=(${lin})\cdot e^{x}$$`,
+      a + b, 0,
+      [T`Produktregel: $f'(x)=${par(a)}\cdot e^x+(${lin})\cdot e^x$`,
+       T`Bei $x=0$ ist $e^0=1$: $f'(0)=${par(a)}+${par(b)}=${a + b}$`],
+      'Produktregel mit (e^x)\' = e^x. Bei x = 0 ist e^0 = 1.'
+    );
+  },
+  () => {
+    const a = nz(-3, 3), b = nz(-4, 4), x0 = pick([-2, -1, 1, 2]);
+    const u = x0 * x0 + a * x0, v = x0 * x0 + b, du = 2 * x0 + a, dv = 2 * x0;
+    const val = du * v + u * dv;
+    return mk(
+      T`<p>Berechne $f'(${x0})$.</p>$$f(x)=(${polyTex([{ c: 1, e: 2 }, { c: a, e: 1 }])})(${polyTex([{ c: 1, e: 2 }, { c: b, e: 0 }])})$$`,
+      val, 0,
+      [T`Mit $u=${polyTex([{ c: 1, e: 2 }, { c: a, e: 1 }])}$ und $v=${polyTex([{ c: 1, e: 2 }, { c: b, e: 0 }])}$: $u'=2x+${par(a)}$, $v'=2x$`,
+       T`Bei $x_0=${x0}$: $u=${u}$, $v=${v}$, $u'=${du}$, $v'=${dv}$`,
+       T`$f'(${x0})=${par(du)}\cdot ${par(v)}+${par(u)}\cdot ${par(dv)}=${val}$`],
+      'Produktregel: u\'v + uv\'. Beide Faktoren getrennt ableiten.'
+    );
+  },
+  () => {
+    let a, b, c, d, x0, den;
+    do { a = nz(-4, 4); b = nz(-4, 4); c = nz(-3, 3); d = nz(-4, 4); x0 = pick([-2, -1, 0, 1, 2]); den = c * x0 + d; } while (den === 0 || a * d - b * c === 0);
+    const val = (a * d - b * c) / (den * den);
+    const num = polyTex([{ c: a, e: 1 }, { c: b, e: 0 }]), dn = polyTex([{ c: c, e: 1 }, { c: d, e: 0 }]);
+    return mk(
+      T`<p>Berechne $f'(${x0})$ (Quotientenregel).</p>$$f(x)=\frac{${num}}{${dn}}$$`,
+      val, 3,
+      [T`$f'(x)=\frac{${par(a)}(${dn})-(${num})\cdot ${par(c)}}{(${dn})^2}=\frac{${a * d - b * c}}{(${dn})^2}$`,
+       T`Bei $x_0=${x0}$ ist der Nenner $(${den})^2=${den * den}$, also $f'(${x0})=\frac{${a * d - b * c}}{${den * den}}\approx ${fm(val, 4)}$`],
+      'Quotientenregel: (u\'v − uv\')/v². Der Zähler vereinfacht sich zu ad − bc.'
+    );
+  }
+];
+
+X.ana_integral = [
+  () => {
+    const a = 4 * nz(-2, 2), b = 2 * nz(-3, 3), q = rnd(1, 2);
+    const val = (a / 4) * q ** 4 + (b / 2) * q ** 2;
+    return mk(
+      T`<p>Berechne das bestimmte Integral.</p>$$\int_{0}^{${q}} (${polyTex([{ c: a, e: 3 }, { c: b, e: 1 }])})\,dx$$`,
+      val, 0,
+      [T`Stammfunktion: $F(x)=${polyTex([{ c: a / 4, e: 4 }, { c: b / 2, e: 2 }])}$`,
+       T`$F(${q})-F(0)=${val}-0=${val}$`],
+      'x^n wird zu x^(n+1)/(n+1). Die Untergrenze 0 liefert hier 0.'
+    );
+  },
+  () => {
+    const a = nz(-3, 4), m = pick([2, 3, 5, 6]);
+    const co = a === 1 ? '' : a === -1 ? '-' : String(a);
+    return mk(
+      T`<p>Berechne das bestimmte Integral.</p>$$\int_{0}^{\ln ${m}} ${co}e^{x}\,dx$$`,
+      a * (m - 1), 0,
+      [T`Stammfunktion: $F(x)=${co}e^x$`,
+       T`$F(\ln ${m})-F(0)=${par(a)}\cdot ${m}-${par(a)}\cdot 1=${a * (m - 1)}$ (denn $e^{\ln ${m}}=${m}$)`],
+      'Die Stammfunktion von e^x ist e^x. Außerdem gilt e^(ln m) = m.'
+    );
+  },
+  () => {
+    const a = pick([1, 2, 3, 4]), q = pick([2, 3, 5, 10]);
+    const val = a * Math.log(q);
+    return mk(
+      T`<p>Berechne das bestimmte Integral (Taschenrechner erlaubt).</p>$$\int_{1}^{${q}} \frac{${a}}{x}\,dx$$`,
+      val, 3,
+      [T`Stammfunktion: $F(x)=${a === 1 ? '' : a}\ln|x|$`,
+       T`$F(${q})-F(1)=${a}\cdot\ln ${q}-0\approx ${fm(val, 4)}$`],
+      'Die Stammfunktion von 1/x ist ln|x|, und ln 1 = 0.'
+    );
+  },
+  () => {
+    const a = 2 * nz(-3, 3), b = nz(-5, 5), c0 = nz(-5, 5), x0 = rnd(1, 3);
+    const val = (a / 2) * x0 * x0 + b * x0 + c0;
+    return mk(
+      T`<p>$F$ ist die Stammfunktion von $f$ mit $F(0)=${c0}$. Berechne $F(${x0})$.</p>$$f(x)=${polyTex([{ c: a, e: 1 }, { c: b, e: 0 }])}$$`,
+      val, 0,
+      [T`$F(x)=${polyTex([{ c: a / 2, e: 2 }, { c: b, e: 1 }])}+C$, und $F(0)=C=${c0}$`,
+       T`$F(${x0})=${par(a / 2)}\cdot ${x0 * x0}+${par(b)}\cdot ${x0}+${par(c0)}=${val}$`],
+      'Aufleiten, dann die Konstante C aus der Bedingung F(0) bestimmen.'
+    );
+  }
+];
+
+X.ana_extrem = [
+  () => {
+    const a = pick([1, 2, 3, -1, -2]), xs = nz(-3, 3), c = nz(-6, 6), b = -2 * a * xs;
+    const y = a * xs * xs + b * xs + c;
+    const askX = Math.random() < 0.5;
+    return mk(
+      T`<p>Die Parabel hat einen ${a > 0 ? 'tiefsten' : 'höchsten'} Punkt. Gib seine <b>${askX ? 'x' : 'y'}-Koordinate</b> an.</p>$$f(x)=${polyTex([{ c: a, e: 2 }, { c: b, e: 1 }, { c: c, e: 0 }])}$$`,
+      askX ? xs : y, 0,
+      [T`$f'(x)=${polyTex([{ c: 2 * a, e: 1 }, { c: b, e: 0 }])}=0\Rightarrow x=${xs}$`,
+       T`$f(${xs})=${par(a)}\cdot ${par(xs * xs)}+${par(b)}\cdot ${par(xs)}+${par(c)}=${y}$`],
+      'f\'(x)=0 liefert die x-Koordinate, Einsetzen in f die y-Koordinate. (Scheitel bei x = −b/(2a).)'
+    );
+  },
+  () => {
+    const k = nz(-3, 3), c = rnd(-5, 5), d = rnd(-5, 5);
+    return mk(
+      T`<p>Bestimme die x-Koordinate der Wendestelle.</p>$$f(x)=${polyTex([{ c: 1, e: 3 }, { c: 3 * k, e: 2 }, { c: c, e: 1 }, { c: d, e: 0 }])}$$`,
+      -k, 0,
+      [T`$f'(x)=3x^2+${par(6 * k)}x+${par(c)}$, $f''(x)=6x+${par(6 * k)}$`,
+       T`$f''(x)=0\Rightarrow x=${-k}$ (die Vorzeichen von $f''$ wechseln dort)`],
+      'Wendestelle: zweite Ableitung gleich null setzen.'
+    );
+  },
+  () => {
+    const U = pick([16, 20, 24, 32, 40, 48]);
+    return mk(
+      T`<p>Ein Rechteck hat den festen Umfang $U=${U}$ m. Wie groß ist der <b>maximale Flächeninhalt</b> in m²?</p>`,
+      (U / 4) ** 2, 0,
+      [T`Seite $a$, andere Seite $${U / 2}-a$: $A(a)=a\cdot(${U / 2}-a)$`,
+       T`$A'(a)=${U / 2}-2a=0\Rightarrow a=${U / 4}$ (ein Quadrat), $A=${U / 4}\cdot ${U / 4}=${(U / 4) ** 2}$`],
+      'Nebenbedingung: a + b = U/2. Fläche als Funktion von a aufstellen, ableiten, null setzen.'
+    );
+  }
+];
+
+X.ana_limit = [
+  () => {
+    const a = nz(-4, 4); let b; do { b = rnd(-4, 4); } while (b === a);
+    const xm = c => (c === 0 ? 'x' : c > 0 ? `x-${c}` : `x+${-c}`);
+    return mk(
+      T`<p>Bestimme den Grenzwert.</p>$$\lim_{x\to ${a}}\frac{${polyTex([{ c: 1, e: 2 }, { c: -(a + b), e: 1 }, { c: a * b, e: 0 }])}}{${xm(a)}}$$`,
+      a - b, 0,
+      [T`Zähler faktorisieren: $${polyTex([{ c: 1, e: 2 }, { c: -(a + b), e: 1 }, { c: a * b, e: 0 }])}=(${xm(a)})(${xm(b)})$`,
+       T`Kürzen: $\frac{(${xm(a)})(${xm(b)})}{${xm(a)}}=${xm(b)}\to ${a}-${par(b)}=${a - b}$`],
+      'Setzt man ein, entsteht 0/0. Zähler faktorisieren und den gemeinsamen Faktor kürzen.'
+    );
+  },
+  () => {
+    const a = nz(-4, 4), b = nz(-4, 4);
+    return mk(
+      T`<p>Bestimme den Grenzwert.</p>$$\lim_{x\to 0}\frac{e^{${a}x}-1}{${b}x}$$`,
+      a / b, 2,
+      [T`Standardgrenzwert $\lim_{u\to0}\frac{e^u-1}{u}=1$ mit $u=${a}x$:`,
+       T`$\frac{e^{${a}x}-1}{${b}x}=\frac{${a}}{${b}}\cdot\frac{e^{${a}x}-1}{${a}x}\to\frac{${a}}{${b}}=${fm(a / b, 3)}$`],
+      'Erweitere so, dass im Nenner dasselbe u wie im Exponenten steht, dann greift (e^u − 1)/u → 1.'
+    );
+  },
+  () => {
+    const m = rnd(1, 2), n = rnd(m, 3);
+    const p = nz(-5, 5), q = nz(-4, 4), r = nz(-5, 5), s = nz(-5, 5);
+    const num = polyTex([{ c: p, e: m }, { c: r, e: 0 }]), den = polyTex([{ c: q, e: n }, { c: s, e: n - 1 }]);
+    const val = m === n ? p / q : 0;
+    return mk(
+      T`<p>Bestimme den Grenzwert.</p>$$\lim_{x\to\infty}\frac{${num}}{${den}}$$`,
+      val, 2,
+      [T`Durch die höchste Nennerpotenz $x^{${n}}$ teilen: Zähler $\sim ${p}x^{${m}-${n}}$, Nenner $\to ${q}$`,
+       m === n ? T`Gleicher Grad: Grenzwert $=\frac{${p}}{${q}}=${fm(val, 3)}$` : T`Der Nennergrad ist größer: der Bruch geht gegen $0$`],
+      'Vergleiche die Grade von Zähler und Nenner: kleiner im Zähler heißt Grenzwert 0, gleich heißt Verhältnis der führenden Koeffizienten.'
+    );
+  }
+];
+
+X.ana_exp = [
+  () => {
+    const a = pick([2, 3, 5]), k = pick([2, 3, 0.5, 1]), m = pick([10, 20, 50, 100]);
+    const x = Math.log(m / a) / k;
+    return mk(
+      T`<p>Löse nach $x$ auf (Taschenrechner erlaubt).</p>$$${a}e^{${tn(k)}x}=${m}$$`,
+      x, 3,
+      [T`Durch ${a} teilen: $e^{${tn(k)}x}=${fm(m / a, 3)}$`,
+       T`$${tn(k)}x=\ln(${fm(m / a, 3)})\approx ${fm(Math.log(m / a), 4)}$, also $x\approx ${fm(x, 3)}$`],
+      'Erst den Vorfaktor wegteilen, dann ln anwenden.'
+    );
+  },
+  () => {
+    const a = pick([2, 3, 4, 5]), k = pick([1, 2, 3, 0.5]);
+    const x = Math.exp(k) / a;
+    return mk(
+      T`<p>Löse nach $x$ auf (Taschenrechner erlaubt).</p>$$\ln(${a}x)=${tn(k)}$$`,
+      x, 3,
+      [T`Beide Seiten als Exponent von $e$: $${a}x=e^{${tn(k)}}\approx ${fm(Math.exp(k), 4)}$`,
+       T`$x=\frac{e^{${tn(k)}}}{${a}}\approx ${fm(x, 3)}$`],
+      'ln(u)=k bedeutet u=e^k.'
+    );
+  },
+  () => {
+    const k = pick([0.05, 0.1, 0.2, 0.25]);
+    const t = Math.log(2) / k;
+    return mk(
+      T`<p>Eine Population wächst nach $N(t)=N_0\,e^{${tn(k)}\,t}$ ($t$ in Jahren). Nach wie vielen Jahren hat sie sich verdoppelt?</p>`,
+      t, 2,
+      [T`Verdopplung: $N_0e^{${tn(k)}t}=2N_0\Rightarrow e^{${tn(k)}t}=2$`,
+       T`$t=\frac{\ln 2}{${tn(k)}}\approx ${fm(t, 3)}$ Jahre`],
+      'N_0 kürzt sich weg. Danach ln auf beiden Seiten.'
+    );
+  }
+];
+
+/* ----- Lineare Algebra ----- */
+X.la_dot = [
+  () => {
+    let a, b, d, e, k, t;
+    do { a = rnd(-4, 4); b = rnd(-4, 4); d = rnd(-4, 4); e = rnd(-4, 4); k = nz(-4, 4); t = -(a * d + b * e) / k; } while (!Number.isInteger(t) || t === 0);
+    chk(a * d + b * e + t * k === 0);
+    return mk(
+      T`<p>Für welchen Wert von $t$ stehen die Vektoren senkrecht aufeinander?</p>$$${vec([a, b, 't'])}\quad\text{und}\quad ${vec([d, e, k])}$$`,
+      t, 0,
+      [T`Senkrecht heißt Skalarprodukt $=0$: $${par(a)}\cdot ${par(d)}+${par(b)}\cdot ${par(e)}+t\cdot ${par(k)}=0$`,
+       T`$${a * d + b * e}+${par(k)}t=0\Rightarrow t=${t}$`],
+      'Skalarprodukt gleich 0 setzen und nach t auflösen.'
+    );
+  },
+  () => {
+    const p = rnd(2, 8), q = rnd(2, 8), ang = pick([0, 60, 90, 120, 180]);
+    const cos = { 0: 1, 60: 0.5, 90: 0, 120: -0.5, 180: -1 }[ang];
+    const cosTex = { 0: '1', 60: '\\frac12', 90: '0', 120: '-\\frac12', 180: '-1' }[ang];
+    return mk(
+      T`<p>Zwei Vektoren haben die Längen $|\vec a|=${p}$ und $|\vec b|=${q}$ und schließen den Winkel $${ang}^\circ$ ein. Berechne $\vec a\cdot\vec b$.</p>`,
+      p * q * cos, 1,
+      [T`$\vec a\cdot\vec b=|\vec a||\vec b|\cos\varphi=${p}\cdot ${q}\cdot ${cosTex}=${fm(p * q * cos, 2)}$`],
+      'Winkelform des Skalarprodukts: Längen mal Kosinus des eingeschlossenen Winkels.'
+    );
+  },
+  () => {
+    const a = [rnd(-4, 4), rnd(-4, 4), rnd(-4, 4)], b = sgn3();
+    const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2], L_ = len3(b);
+    return mk(
+      T`<p>Berechne die (vorzeichenbehaftete) Länge der Projektion von $\vec a$ auf $\vec b$.</p>$$\vec a=${vec(a)},\quad \vec b=${vec(b)}$$`,
+      dot / L_, 2,
+      [T`$\vec a\cdot\vec b=${dot}$ und $|\vec b|=${L_}$`,
+       T`Projektionslänge $=\frac{\vec a\cdot\vec b}{|\vec b|}=\frac{${dot}}{${L_}}=${fm(dot / L_, 3)}$`],
+      'Projektionslänge = Skalarprodukt geteilt durch den Betrag des Vektors, auf den projiziert wird.'
+    );
+  }
+];
+
+X.la_norm = [
+  () => {
+    const P = [rnd(-4, 4), rnd(-4, 4), rnd(-4, 4)], dv = sgn3(), Q = P.map((x, i) => x + dv[i]);
+    const val = len3(dv);
+    return mk(
+      T`<p>Berechne den Abstand der Punkte $P(${P.join('\\,|\\,')})$ und $Q(${Q.join('\\,|\\,')})$.</p>`,
+      val, 0,
+      [T`$\overrightarrow{PQ}=${vec(dv)}$`,
+       T`$|\overrightarrow{PQ}|=\sqrt{${dv.map(x => x * x).join('+')}}=${val}$`],
+      'Differenzvektor Q − P bilden und dessen Betrag berechnen.'
+    );
+  },
+  () => {
+    const v = sgn3(), L_ = len3(v), i = rnd(0, 2);
+    return mk(
+      T`<p>Der Vektor $\vec v$ wird auf Länge 1 normiert. Wie groß ist die <b>${i + 1}. Komponente</b> des Einheitsvektors?</p>$$\vec v=${vec(v)}$$`,
+      v[i] / L_, 3,
+      [T`$|\vec v|=${L_}$`, T`$\vec e=\frac{1}{${L_}}\vec v$,
+        ${i + 1}. Komponente: $\frac{${par(v[i])}}{${L_}}=${fm(v[i] / L_, 4)}$`],
+      'Einheitsvektor = Vektor geteilt durch seine Länge.'
+    );
+  },
+  () => {
+    const t = pick(TRI2), v = shuffle([t[0], t[1]]).map(x => x * pick([-1, 1]));
+    return mk(
+      T`<p>Berechne die Länge des Vektors.</p>$$\left|${vec(v)}\right|$$`,
+      t[2], 0,
+      [T`$\sqrt{${par(v[0])}^2+${par(v[1])}^2}=\sqrt{${v[0] * v[0]}+${v[1] * v[1]}}=\sqrt{${t[2] * t[2]}}=${t[2]}$`],
+      'Pythagoras in der Ebene: Wurzel aus der Summe der Quadrate.'
+    );
+  }
+];
+
+X.la_det2 = [
+  () => {
+    const u = [rnd(-4, 4), rnd(-4, 4)], v = [rnd(-4, 4), rnd(-4, 4)];
+    const det = u[0] * v[1] - u[1] * v[0];
+    return mk(
+      T`<p>Berechne den Flächeninhalt des Parallelogramms, das von den Vektoren $\vec u=${vec(u)}$ und $\vec v=${vec(v)}$ aufgespannt wird.</p>`,
+      Math.abs(det), 0,
+      [T`$\det\begin{pmatrix}${u[0]}&${v[0]}\\${u[1]}&${v[1]}\end{pmatrix}=${par(u[0])}\cdot ${par(v[1])}-${par(v[0])}\cdot ${par(u[1])}=${det}$`,
+       T`Der Flächeninhalt ist der Betrag: $${Math.abs(det)}$`],
+      'Flächeninhalt = Betrag der Determinante der beiden Spaltenvektoren.'
+    );
+  },
+  () => {
+    let a, b, c, k;
+    do { a = pick([1, 2, 3, -1, -2]); b = nz(-4, 4); c = nz(-4, 4); k = (b * c) / a; } while (!Number.isInteger(k) || k === 0);
+    chk(a * k - b * c === 0);
+    return mk(
+      T`<p>Für welchen Wert von $k$ ist die Matrix nicht invertierbar?</p>$$${mat([[a, b], [c, 'k']])}$$`,
+      k, 0,
+      [T`Nicht invertierbar heißt $\det=0$: $${par(a)}\cdot k-${par(b)}\cdot ${par(c)}=0$`,
+       T`$${a}k=${b * c}\Rightarrow k=${k}$`],
+      'Determinante gleich 0 setzen und nach k auflösen.'
+    );
+  },
+  () => {
+    const r = rnd(0, 2), p = pick([2, 3, 4, 5, -2, -3]);
+    if (r === 0) {
+      const q = pick([2, 3, -2, -4, 5]);
+      return mk(T`<p>Für zwei $2\times2$-Matrizen gilt $\det A=${p}$ und $\det B=${q}$. Berechne $\det(A\cdot B)$.</p>`,
+        p * q, 0, [T`$\det(AB)=\det A\cdot\det B=${par(p)}\cdot ${par(q)}=${p * q}$`], 'Die Determinante ist multiplikativ.');
+    }
+    if (r === 1) {
+      const k = pick([2, 3, -2, 4]);
+      return mk(T`<p>Für eine $2\times2$-Matrix $A$ gilt $\det A=${p}$. Berechne $\det(${k}A)$.</p>`,
+        k * k * p, 0, [T`Jede der 2 Zeilen wird mit $${k}$ multipliziert: $\det(${k}A)=${par(k)}^2\cdot ${par(p)}=${k * k * p}$`], 'Bei n×n-Matrizen gilt det(kA) = k^n · det A.');
+    }
+    return mk(T`<p>Für eine invertierbare Matrix $A$ gilt $\det A=${p}$. Berechne $\det(A^{-1})$.</p>`,
+      1 / p, 3, [T`$\det(A^{-1})=\frac{1}{\det A}=\frac{1}{${p}}=${fm(1 / p, 4)}$`], 'det(A⁻¹) ist der Kehrwert von det A.');
+  }
+];
+
+X.la_det3 = [
+  () => {
+    const [a, d, f] = [nz(-4, 4), nz(-4, 4), nz(-4, 4)], b = rnd(-4, 4), c = rnd(-4, 4), e = rnd(-4, 4);
+    return mk(
+      T`<p>Berechne die Determinante (ohne lange Rechnung).</p>$$\det${mat([[a, b, c], [0, d, e], [0, 0, f]])}$$`,
+      a * d * f, 0,
+      [T`Obere Dreiecksmatrix: Determinante $=$ Produkt der Diagonale $=${par(a)}\cdot ${par(d)}\cdot ${par(f)}=${a * d * f}$`],
+      'Bei Dreiecksmatrizen zählt nur die Hauptdiagonale.'
+    );
+  },
+  () => {
+    const m = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(-2, 3)));
+    const det = det3(m);
+    return mk(
+      T`<p>Berechne das Volumen des Spats, der von den drei Vektoren (Zeilen) aufgespannt wird.</p>$$${mat(m)}$$`,
+      Math.abs(det), 0,
+      [T`Volumen $=|\det|$, Entwicklung nach der ersten Zeile liefert $\det=${det}$`, T`Volumen $=${Math.abs(det)}$`],
+      'Spatvolumen = Betrag der 3×3-Determinante (Spatprodukt).'
+    );
+  },
+  () => {
+    const r1 = [rnd(-3, 3), rnd(-3, 3), rnd(-3, 3)], r2 = [rnd(-3, 3), rnd(-3, 3), rnd(-3, 3)];
+    const r3 = r1.map((x, i) => x + r2[i]);
+    chk(det3([r1, r2, r3]) === 0);
+    return mk(
+      T`<p>Berechne die Determinante. (Tipp: Schau dir die Zeilen an.)</p>$$\det${mat([r1, r2, r3])}$$`,
+      0, 0,
+      [T`Die dritte Zeile ist die Summe der ersten beiden: $(${r1.join(', ')})+(${r2.join(', ')})=(${r3.join(', ')})$`,
+       T`Linear abhängige Zeilen ergeben $\det=0$`],
+      'Prüfe, ob eine Zeile eine Kombination der anderen ist. Dann ist die Determinante 0.'
+    );
+  }
+];
+
+X.la_matmul = [
+  () => {
+    const A = Array.from({ length: 2 }, () => [rnd(-3, 4), rnd(-3, 4)]), v = [rnd(-3, 4), rnd(-3, 4)], i = rnd(0, 1);
+    const val = A[i][0] * v[0] + A[i][1] * v[1];
+    return mk(
+      T`<p>Berechne die <b>${i + 1}. Komponente</b> von $A\cdot\vec v$.</p>$$A=${mat(A)},\quad \vec v=${vec(v)}$$`,
+      val, 0,
+      [T`Zeile ${i + 1} von $A$ mal $\vec v$: $${par(A[i][0])}\cdot ${par(v[0])}+${par(A[i][1])}\cdot ${par(v[1])}=${val}$`],
+      'Jede Komponente ist das Skalarprodukt einer Zeile der Matrix mit dem Vektor.'
+    );
+  },
+  () => {
+    const A = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(-2, 2)));
+    const B = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(-2, 2)));
+    const i = rnd(0, 2), j = rnd(0, 2);
+    const val = A[i][0] * B[0][j] + A[i][1] * B[1][j] + A[i][2] * B[2][j];
+    return mk(
+      T`<p>Berechne den Eintrag in <b>Zeile ${i + 1}, Spalte ${j + 1}</b> von $A\cdot B$.</p>$$A=${mat(A)},\quad B=${mat(B)}$$`,
+      val, 0,
+      [T`Zeile ${i + 1} von $A$ mal Spalte ${j + 1} von $B$: $${[0, 1, 2].map(k => par(A[i][k]) + '\\cdot ' + par(B[k][j])).join('+')}=${val}$`],
+      'Zeile mal Spalte, drei Produkte addieren.'
+    );
+  },
+  () => {
+    const A = Array.from({ length: 2 }, () => [rnd(-3, 3), rnd(-3, 3)]), B = Array.from({ length: 2 }, () => [rnd(-3, 3), rnd(-3, 3)]);
+    const p11 = A[0][0] * B[0][0] + A[0][1] * B[1][0], p22 = A[1][0] * B[0][1] + A[1][1] * B[1][1];
+    return mk(
+      T`<p>Berechne die Spur (Summe der Diagonaleinträge) von $A\cdot B$.</p>$$A=${mat(A)},\quad B=${mat(B)}$$`,
+      p11 + p22, 0,
+      [T`$(AB)_{11}=${p11}$ und $(AB)_{22}=${p22}$`, T`Spur $=${p11}+${par(p22)}=${p11 + p22}$`],
+      'Es genügen die beiden Diagonaleinträge des Produkts.'
+    );
+  },
+  () => {
+    const A = Array.from({ length: 2 }, () => [rnd(-2, 3), rnd(-2, 3)]), i = rnd(0, 1), j = rnd(0, 1);
+    const val = A[i][0] * A[0][j] + A[i][1] * A[1][j];
+    return mk(
+      T`<p>Berechne den Eintrag in <b>Zeile ${i + 1}, Spalte ${j + 1}</b> von $A^2=A\cdot A$.</p>$$A=${mat(A)}$$`,
+      val, 0,
+      [T`Zeile ${i + 1} von $A$ mal Spalte ${j + 1} von $A$: $${par(A[i][0])}\cdot ${par(A[0][j])}+${par(A[i][1])}\cdot ${par(A[1][j])}=${val}$`],
+      'A² ist A mal A (nicht jeder Eintrag einzeln quadriert).'
+    );
+  }
+];
+
+X.la_system = [
+  () => {
+    let A, D;
+    do { A = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(-2, 2))); D = det3(A); } while (D === 0 || A.some(r => r.every(v => v === 0)));
+    const sol = [rnd(-3, 3), rnd(-3, 3), rnd(-3, 3)];
+    const rhs = A.map(r => r[0] * sol[0] + r[1] * sol[1] + r[2] * sol[2]);
+    const k = rnd(0, 2), nm = ['x', 'y', 'z'][k];
+    const Ak = A.map((r, i) => r.map((v, j) => (j === k ? rhs[i] : v)));
+    const Dk = det3(Ak);
+    chk(Dk === D * sol[k]);
+    return mk(
+      T`<p>Löse das Gleichungssystem und gib <b>${nm}</b> an.</p>$$\begin{aligned}${A.map((r, i) => `${lin3(r)} &= ${rhs[i]}`).join(NL)}\end{aligned}$$`,
+      sol[k], 0,
+      [T`Cramersche Regel: $D=\det${mat(A)}=${D}$`,
+       T`$D_${nm}$ (Spalte ${k + 1} durch die rechte Seite ersetzt) $=\det${mat(Ak)}=${Dk}$`,
+       T`$${nm}=\frac{D_${nm}}{D}=\frac{${Dk}}{${D}}=${sol[k]}$`],
+      'Entweder Gauß-Verfahren oder mit der Cramerschen Regel über drei Determinanten.'
+    );
+  },
+  () => {
+    let a1, b1, a2, b2;
+    do { a1 = rnd(1, 4); b1 = rnd(1, 4); a2 = rnd(1, 4); b2 = rnd(1, 4); } while (a1 * b2 - a2 * b1 === 0);
+    const x = pick([2, 3, 4]), y = pick([1, 2, 3, 4, 5]);
+    const e = a1 * x + b1 * y, f = a2 * x + b2 * y, D = a1 * b2 - a2 * b1, Dy = a1 * f - e * a2;
+    chk(Dy === D * y);
+    return mk(
+      T`<p>In einem Café kosten ${a1} Kaffee und ${b1} Kuchen zusammen ${e} €, ${a2} Kaffee und ${b2} Kuchen zusammen ${f} €. Wie viel kostet <b>ein Kuchen</b>?</p>`,
+      y, 0,
+      [T`Ansatz: $${lin3([a1, b1], ['k', 'u'])}=${e}$ und $${lin3([a2, b2], ['k', 'u'])}=${f}$ ($k$ Kaffee, $u$ Kuchen)`,
+       T`$D=${a1}\cdot ${b2}-${b1}\cdot ${a2}=${D}$, $D_u=${a1}\cdot ${f}-${e}\cdot ${a2}=${Dy}$, also $u=${Dy}/${D}=${y}$`],
+      'Zwei Unbekannte, zwei Gleichungen: Preise als Variablen ansetzen.'
+    );
+  },
+  () => {
+    let m1, m2;
+    do { m1 = nz(-3, 3); m2 = nz(-3, 3); } while (m1 === m2);
+    const xs = rnd(-4, 4), ys = rnd(-5, 5), b1 = ys - m1 * xs, b2 = ys - m2 * xs;
+    chk(m1 * xs + b1 === m2 * xs + b2);
+    return mk(
+      T`<p>Bestimme die x-Koordinate des Schnittpunkts der beiden Geraden.</p>$$g:\ y=${polyTex([{ c: m1, e: 1 }, { c: b1, e: 0 }])},\qquad h:\ y=${polyTex([{ c: m2, e: 1 }, { c: b2, e: 0 }])}$$`,
+      xs, 0,
+      [T`Gleichsetzen: $${polyTex([{ c: m1, e: 1 }, { c: b1, e: 0 }])}=${polyTex([{ c: m2, e: 1 }, { c: b2, e: 0 }])}$`,
+       T`$x=\frac{${b2}-${par(b1)}}{${m1}-${par(m2)}}=${xs}$`],
+      'Gleichsetzen der beiden y-Terme und nach x auflösen.'
+    );
+  }
+];
+
+X.la_eigen = [
+  () => {
+    const a = rnd(-3, 4); let d; do { d = rnd(-3, 4); } while (d === a);
+    const b = rnd(-4, 4), upper = Math.random() < 0.5, big = Math.random() < 0.5;
+    const A = upper ? [[a, b], [0, d]] : [[a, 0], [b, d]];
+    return mk(
+      T`<p>Bestimme den ${big ? '<b>größeren</b>' : '<b>kleineren</b>'} Eigenwert.</p>$$A=${mat(A)}$$`,
+      big ? Math.max(a, d) : Math.min(a, d), 0,
+      [T`$A$ ist eine ${upper ? 'obere' : 'untere'} Dreiecksmatrix: die Eigenwerte stehen auf der Diagonale`,
+       T`$\lambda_1=${a}$, $\lambda_2=${d}$`],
+      'Bei Dreiecksmatrizen sind die Diagonaleinträge die Eigenwerte.'
+    );
+  },
+  () => {
+    let l1, l2; do { l1 = rnd(-3, 5); l2 = rnd(-3, 5); } while (l1 === l2);
+    const T_ = l1 + l2, D = l1 * l2, big = Math.random() < 0.5;
+    return mk(
+      T`<p>Eine $2\times2$-Matrix hat die Spur ${T_} und die Determinante ${D}. Gib den ${big ? '<b>größeren</b>' : '<b>kleineren</b>'} Eigenwert an (beide sind ganzzahlig).</p>`,
+      big ? Math.max(l1, l2) : Math.min(l1, l2), 0,
+      [T`Charakteristisches Polynom: $\lambda^2-${par(T_)}\lambda+${par(D)}=0$`,
+       T`Zwei Zahlen mit Summe ${T_} und Produkt ${D}: $\lambda_1=${Math.min(l1, l2)}$, $\lambda_2=${Math.max(l1, l2)}$`],
+      'Summe der Eigenwerte = Spur, Produkt der Eigenwerte = Determinante.'
+    );
+  },
+  () => {
+    const a = rnd(-3, 4), b = nz(-4, 4);
+    return mk(
+      T`<p>Bestimme den größeren Eigenwert der symmetrischen Matrix.</p>$$A=${mat([[a, b], [b, a]])}$$`,
+      a + Math.abs(b), 0,
+      [T`Spur $=${2 * a}$, Determinante $=${a * a - b * b}$, also $\lambda^2-${par(2 * a)}\lambda+${par(a * a - b * b)}=0$`,
+       T`Lösungen: $\lambda=${a}\pm ${Math.abs(b)}$, der größere ist $${a + Math.abs(b)}$`],
+      'Für Matrizen dieser Form sind die Eigenvektoren (1,1) und (1,−1) mit den Eigenwerten a+b und a−b.'
+    );
+  }
+];
+
+/* ----- Statistik ----- */
+X.st_mean = [
+  () => {
+    const n = rnd(3, 6), m = rnd(5, 15), w = rnd(1, 25);
+    const val = (n * m + w) / (n + 1);
+    return mk(
+      T`<p>${n} Messwerte haben den Mittelwert ${m}. Ein weiterer Messwert ${w} kommt hinzu. Wie groß ist der neue Mittelwert?</p>`,
+      val, 2,
+      [T`Alte Summe $=${n}\cdot ${m}=${n * m}$, neue Summe $=${n * m}+${w}=${n * m + w}$`, T`Neuer Mittelwert $=\frac{${n * m + w}}{${n + 1}}=${fm(val, 3)}$`],
+      'Aus Mittelwert und Anzahl lässt sich die Summe zurückrechnen.'
+    );
+  },
+  () => {
+    let xs, mode;
+    do {
+      xs = Array.from({ length: rnd(7, 9) }, () => rnd(1, 8));
+      const cnt = {}; xs.forEach(v => { cnt[v] = (cnt[v] || 0) + 1; });
+      const mx = Math.max(...Object.values(cnt)), modes = Object.keys(cnt).filter(k => cnt[k] === mx);
+      mode = modes.length === 1 && mx >= 2 ? +modes[0] : null;
+    } while (mode === null);
+    const askMode = Math.random() < 0.5, range = Math.max(...xs) - Math.min(...xs);
+    return mk(
+      T`<p>Bestimme ${askMode ? 'den <b>Modalwert</b> (häufigster Wert)' : 'die <b>Spannweite</b> (größter minus kleinster Wert)'} des Datensatzes:</p><p>${xs.join(', ')}</p>`,
+      askMode ? mode : range, 0,
+      askMode ? [T`Der Wert ${mode} kommt am häufigsten vor.`] : [T`Größter Wert ${Math.max(...xs)}, kleinster Wert ${Math.min(...xs)}: $${Math.max(...xs)}-${Math.min(...xs)}=${range}$`],
+      askMode ? 'Zähle, welcher Wert am öftesten vorkommt.' : 'Spannweite = Maximum minus Minimum.'
+    );
+  },
+  () => {
+    const g = shuffle([1.0, 1.3, 1.7, 2.0, 2.3, 2.7, 3.0, 3.3]).slice(0, 3), w = shuffle([3, 4, 5, 6, 8, 10]).slice(0, 3);
+    const num = g.reduce((s, x, i) => s + x * w[i], 0), den = w.reduce((a, b) => a + b, 0);
+    return mk(
+      T`<p>Berechne die gewichtete Durchschnittsnote (Gewicht = ECTS-Punkte):</p><p>${g.map((x, i) => `Modul ${i + 1}: Note ${fm(x, 1)}, ${w[i]} ECTS`).join('<br>')}</p>`,
+      num / den, 2,
+      [T`$\frac{${g.map((x, i) => fm(x, 1) + '\\cdot ' + w[i]).join('+')}}{${w.join('+')}}=\frac{${fm(num, 2)}}{${den}}=${fm(num / den, 3)}$`],
+      'Jede Note mit ihrem Gewicht multiplizieren, summieren, durch die Summe der Gewichte teilen.'
+    );
+  }
+];
+
+X.st_var = [
+  () => {
+    let xs = null;
+    for (let t = 0; t < 20000 && !xs; t++) {
+      const c = Array.from({ length: 5 }, () => rnd(2, 12)), sum = c.reduce((a, b) => a + b, 0);
+      if (sum % 5) continue;
+      const m = sum / 5, ss = c.reduce((a, x) => a + (x - m) ** 2, 0);
+      if (ss % 4 === 0 && Number.isInteger(Math.sqrt(ss / 4)) && ss > 0) xs = c;
+    }
+    if (!xs) { const m = rnd(5, 9), d = rnd(1, 3); xs = shuffle([m - d, m, m + d]); }
+    const n = xs.length, m = xs.reduce((a, b) => a + b, 0) / n, ss = xs.reduce((a, x) => a + (x - m) ** 2, 0), s = Math.sqrt(ss / (n - 1));
+    return mk(
+      T`<p>Berechne die <b>Stichprobenstandardabweichung</b> $s$ des Datensatzes:</p><p>${xs.join(', ')}</p>`,
+      s, 2,
+      [T`Mittelwert $\bar x=${fm(m, 3)}$, Quadratsumme der Abweichungen $=${fm(ss, 3)}$`,
+       T`$s^2=\frac{${fm(ss, 3)}}{${n - 1}}=${fm(ss / (n - 1), 3)}$, also $s=\sqrt{${fm(ss / (n - 1), 3)}}=${fm(s, 3)}$`],
+      'Erst die Varianz (Division durch n−1) berechnen, dann die Wurzel ziehen.'
+    );
+  },
+  () => {
+    let xs, sum, tries = 0;
+    do { xs = Array.from({ length: 5 }, () => rnd(2, 12)); sum = xs.reduce((a, b) => a + b, 0); tries++; } while (sum % 5 !== 0 && tries < 300);
+    const m = sum / 5, ss = xs.reduce((a, x) => a + (x - m) ** 2, 0);
+    return mk(
+      T`<p>Der Datensatz ist die <b>gesamte Grundgesamtheit</b>. Berechne die Varianz $\sigma^2$ (Division durch $n$):</p><p>${xs.join(', ')}</p>`,
+      ss / 5, 2,
+      [T`Mittelwert $\mu=${fm(m, 3)}$, Quadratsumme der Abweichungen $=${fm(ss, 3)}$`, T`$\sigma^2=\frac{${fm(ss, 3)}}{5}=${fm(ss / 5, 3)}$`],
+      'Bei einer vollständigen Grundgesamtheit wird durch n geteilt, nicht durch n−1.'
+    );
+  },
+  () => {
+    const v = pick([2, 3, 4, 5, 6, 9]), a = pick([2, 3, -2, -3, 4]), b = nz(-5, 5);
+    return mk(
+      T`<p>$X$ hat die Varianz $\operatorname{Var}(X)=${v}$. Berechne $\operatorname{Var}(${a}X${b > 0 ? '+' : ''}${b})$.</p>`,
+      a * a * v, 0,
+      [T`$\operatorname{Var}(aX+b)=a^2\operatorname{Var}(X)=${par(a)}^2\cdot ${v}=${a * a * v}$ (die Konstante $${b}$ ändert die Streuung nicht)`],
+      'Verschieben ändert die Varianz nicht, Strecken mit a ändert sie um a².'
+    );
+  }
+];
+
+X.st_comb = [
+  () => {
+    const n = rnd(2, 6), k = rnd(2, 4);
+    return mk(
+      T`<p>Ein Zahlenschloss hat ${k} Stellen mit jeweils den Ziffern 1 bis ${n}. Wie viele verschiedene Codes sind möglich?</p>`,
+      n ** k, 0,
+      [T`Für jede der ${k} Stellen gibt es ${n} Möglichkeiten: $${n}^{${k}}=${n ** k}$`],
+      'Mit Wiederholung: n^k.'
+    );
+  },
+  () => {
+    const n = rnd(4, 6);
+    return mk(
+      T`<p>${n} Personen setzen sich in einer Reihe auf ${n} Plätze. Wie viele verschiedene Sitzordnungen gibt es?</p>`,
+      fact(n), 0,
+      [T`$${n}!=${Array.from({ length: n }, (_, i) => n - i).join('\\cdot ')}=${fact(n)}$`],
+      'Alle Anordnungen von n Objekten: n!'
+    );
+  },
+  () => {
+    const m = rnd(4, 6), n = rnd(4, 6), a = rnd(1, 3), b = rnd(1, 3);
+    return mk(
+      T`<p>Ein Ausschuss soll aus ${m} Frauen und ${n} Männern gebildet werden: genau ${a} ${a === 1 ? 'Frau' : 'Frauen'} und ${b} ${b === 1 ? 'Mann' : 'Männer'}. Wie viele Möglichkeiten gibt es?</p>`,
+      binom(m, a) * binom(n, b), 0,
+      [T`$\binom{${m}}{${a}}\cdot\binom{${n}}{${b}}=${binom(m, a)}\cdot ${binom(n, b)}=${binom(m, a) * binom(n, b)}$`],
+      'Beide Auswahlen sind unabhängig, die Möglichkeiten werden multipliziert.'
+    );
+  }
+];
+
+X.st_bayes = [
+  () => {
+    const pa = pick([0.5, 0.6, 0.7]), da = pick([1, 2, 3]), db = pick([4, 5, 6]);
+    const tot = pa * da + (1 - pa) * db;
+    return mk(
+      T`<p>Maschine A produziert ${fm(pa * 100, 0)} % der Teile mit ${da} % Ausschuss, Maschine B den Rest mit ${db} % Ausschuss. Wie viel Prozent aller Teile sind Ausschuss?</p>`,
+      tot, 2,
+      [T`$P(\text{Ausschuss})=${tn(pa)}\cdot ${da}\,\%+${tn(1 - pa)}\cdot ${db}\,\%=${fm(tot, 3)}\,\%$`],
+      'Satz der totalen Wahrscheinlichkeit: gewichtete Summe der Ausschussraten.',
+      { note: 'In Prozent, auf zwei Nachkommastellen gerundet (ohne %-Zeichen).' }
+    );
+  },
+  () => {
+    const pa = pick([0.5, 0.6, 0.7]), da = pick([1, 2, 3]), db = pick([4, 5, 6]);
+    const tot = pa * da + (1 - pa) * db, val = pa * da / tot * 100;
+    return mk(
+      T`<p>Maschine A produziert ${fm(pa * 100, 0)} % der Teile mit ${da} % Ausschuss, Maschine B den Rest mit ${db} % Ausschuss. Ein zufällig gewähltes Teil ist Ausschuss. Wie wahrscheinlich stammt es von Maschine A? (in Prozent)</p>`,
+      val, 1,
+      [T`$P(\text{Ausschuss})=${fm(tot, 3)}\,\%$ und $P(A\cap\text{Ausschuss})=${tn(pa)}\cdot ${da}\,\%=${fm(pa * da, 3)}\,\%$`,
+       T`$P(A\mid\text{Ausschuss})=\frac{${fm(pa * da, 3)}}{${fm(tot, 3)}}\approx ${fm(val, 2)}\,\%$`],
+      'Bayes: Anteil von A am gesamten Ausschuss.',
+      { note: 'In Prozent, auf eine Nachkommastelle gerundet (ohne %-Zeichen).' }
+    );
+  },
+  () => {
+    const pa = pick([0.2, 0.3, 0.4, 0.5, 0.6]), pb = pick([0.2, 0.3, 0.4, 0.5, 0.6]);
+    const val = pa + pb - pa * pb;
+    return mk(
+      T`<p>Die Ereignisse $A$ und $B$ sind unabhängig mit $P(A)=${tn(pa)}$ und $P(B)=${tn(pb)}$. Berechne $P(A\cup B)$.</p>`,
+      val, 2,
+      [T`$P(A\cap B)=P(A)P(B)=${tn(pa)}\cdot ${tn(pb)}=${fm(pa * pb, 3)}$`, T`$P(A\cup B)=${tn(pa)}+${tn(pb)}-${fm(pa * pb, 3)}=${fm(val, 3)}$`],
+      'Unabhängig: P(A∩B) = P(A)·P(B). Dann die Additionsformel anwenden.'
+    );
+  }
+];
+
+X.st_binom = [
+  () => {
+    const [n, p] = pick([[100, 0.2], [36, 0.5], [25, 0.2], [64, 0.5], [48, 0.25], [100, 0.5], [100, 0.1], [400, 0.2]]);
+    const E = n * p, s = Math.sqrt(n * p * (1 - p)), askE = Math.random() < 0.5;
+    chk(Math.abs(s - Math.round(s)) < 1e-9);
+    return mk(
+      T`<p>$X$ ist binomialverteilt mit $n=${n}$ und $p=${tn(p)}$. Berechne ${askE ? 'den Erwartungswert $E[X]$' : 'die Standardabweichung $\\sigma$'}.</p>`,
+      askE ? E : Math.round(s), 0,
+      askE ? [T`$E[X]=np=${n}\cdot ${tn(p)}=${E}$`] : [T`$\sigma=\sqrt{np(1-p)}=\sqrt{${n}\cdot ${tn(p)}\cdot ${tn(1 - p)}}=\sqrt{${fm(n * p * (1 - p), 3)}}=${Math.round(s)}$`],
+      askE ? 'E[X] = n · p.' : 'σ = Wurzel aus n·p·(1−p).'
+    );
+  },
+  () => {
+    const n = rnd(3, 10), p = pick([0.1, 0.2, 0.3, 0.5]);
+    const val = 1 - Math.pow(1 - p, n);
+    return mk(
+      T`<p>$X$ ist binomialverteilt mit $n=${n}$ und $p=${tn(p)}$. Berechne $P(X\ge1)$.</p>`,
+      val, 3,
+      [T`Gegenereignis: $P(X\ge1)=1-P(X=0)=1-${tn(1 - p)}^{${n}}$`, T`$=1-${fm(Math.pow(1 - p, n), 5)}\approx ${fm(val, 4)}$`],
+      'Es ist einfacher, das Gegenereignis „kein Erfolg“ zu berechnen.'
+    );
+  },
+  () => {
+    const n = rnd(4, 8), p = pick([0.1, 0.2, 0.3, 0.5]), q = 1 - p;
+    const p0 = Math.pow(q, n), p1 = n * p * Math.pow(q, n - 1);
+    return mk(
+      T`<p>$X$ ist binomialverteilt mit $n=${n}$ und $p=${tn(p)}$. Berechne $P(X\le1)$.</p>`,
+      p0 + p1, 3,
+      [T`$P(X=0)=${tn(q)}^{${n}}\approx ${fm(p0, 5)}$, $P(X=1)=${n}\cdot ${tn(p)}\cdot ${tn(q)}^{${n - 1}}\approx ${fm(p1, 5)}$`, T`$P(X\le1)\approx ${fm(p0 + p1, 4)}$`],
+      'P(X ≤ 1) = P(X=0) + P(X=1).'
+    );
+  }
+];
+
+X.st_ev = [
+  () => {
+    const w = pick([6, 12, 18, 24, 30]), e = pick([1, 2, 3, 4]);
+    const val = w / 6 - e;
+    return mk(
+      T`<p>Du würfelst einmal. Bei einer Sechs erhältst du ${w} €, sonst nichts. Der Einsatz beträgt ${e} €. Wie hoch ist der erwartete Gewinn pro Spiel (Auszahlung minus Einsatz) in €?</p>`,
+      val, 2,
+      [T`$E[\text{Auszahlung}]=\frac16\cdot ${w}+\frac56\cdot 0=${fm(w / 6, 3)}$`, T`$E[\text{Gewinn}]=${fm(w / 6, 3)}-${e}=${fm(val, 3)}$`],
+      'Erwartete Auszahlung berechnen und den Einsatz abziehen.'
+    );
+  },
+  () => {
+    const xs = shuffle([-4, -2, 0, 1, 3, 5, 8]).slice(0, 3).sort((a, b) => a - b), ps = probs10(3);
+    const E = xs.reduce((s, x, i) => s + x * ps[i], 0), E2 = xs.reduce((s, x, i) => s + x * x * ps[i], 0);
+    return mk(
+      T`<p>Berechne die Varianz $\operatorname{Var}(X)$.</p>$$${dtable(xs, ps)}$$`,
+      E2 - E * E, 2,
+      [T`$E[X]=${fm(E, 3)}$, $E[X^2]=${fm(E2, 3)}$`, T`$\operatorname{Var}(X)=E[X^2]-(E[X])^2=${fm(E2, 3)}-${fm(E * E, 3)}=${fm(E2 - E * E, 3)}$`],
+      'Var(X) = E[X²] − (E[X])².'
+    );
+  },
+  () => {
+    const m = rnd(2, 9), a = pick([2, 3, -2, 4]), b = nz(-5, 5);
+    return mk(
+      T`<p>Es gilt $E[X]=${m}$. Berechne $E[${a}X${b > 0 ? '+' : ''}${b}]$.</p>`,
+      a * m + b, 0,
+      [T`Linearität: $E[aX+b]=a\,E[X]+b=${par(a)}\cdot ${m}+${par(b)}=${a * m + b}$`],
+      'Der Erwartungswert ist linear.'
+    );
+  }
+];
+
+X.st_z = [
+  () => {
+    const o = pick([
+      [T`zwischen $\mu$ und $\mu+\sigma$`, 34, '68 % / 2'],
+      [T`oberhalb von $\mu+\sigma$`, 16, '(100 % − 68 %) / 2'],
+      [T`zwischen $\mu-2\sigma$ und $\mu+\sigma$`, 81.5, '47,5 % + 34 %'],
+      [T`oberhalb von $\mu+2\sigma$`, 2.5, '(100 % − 95 %) / 2']
+    ]);
+    return mk(
+      T`<p>Normalverteilung: Wie viel Prozent der Werte liegen ungefähr ${o[0]}? (Nach der 68-95-99,7-Regel, Symmetrie nutzen.)</p>`,
+      o[1], 1,
+      [T`Rechnung: ${o[2]} $=${fm(o[1], 1)}\,\%$`],
+      'Die Verteilung ist symmetrisch um μ: halbiere die Prozentwerte der Faustregel.',
+      { tol: 0.5, note: 'In Prozent (ohne %-Zeichen). Die Faustregel genügt, die Toleranz beträgt ±0,5.' }
+    );
+  },
+  () => {
+    let m1, s1, m2, s2, z1, z2;
+    const zs = [-1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5];
+    do { z1 = pick(zs); z2 = pick(zs); } while (z1 === z2);
+    m1 = pick([50, 60, 70]); s1 = pick([5, 10]); m2 = pick([30, 40, 100]); s2 = pick([4, 8, 10]);
+    const x1 = m1 + z1 * s1, x2 = m2 + z2 * s2;
+    return mk(
+      T`<p>Anna erreicht in Test A ${fm(x1, 1)} Punkte (Mittel ${m1}, Standardabweichung ${s1}). Ben erreicht in Test B ${fm(x2, 1)} Punkte (Mittel ${m2}, Standardabweichung ${s2}). Gib den <b>größeren</b> z-Wert der beiden an.</p>`,
+      Math.max(z1, z2), 2,
+      [T`Anna: $z=\frac{${tn(x1)}-${m1}}{${s1}}=${fm(z1, 2)}$`, T`Ben: $z=\frac{${tn(x2)}-${m2}}{${s2}}=${fm(z2, 2)}$, der größere z-Wert ist $${fm(Math.max(z1, z2), 2)}$`],
+      'z-Werte machen Ergebnisse aus verschiedenen Verteilungen vergleichbar.'
+    );
+  },
+  () => {
+    const mu = pick([50, 100, 170, 500]), sg = pick([5, 10, 15, 20]), z = pick([1, 2, 3, -1, -2]), x = mu + z * sg;
+    const askMu = Math.random() < 0.5;
+    return askMu
+      ? mk(T`<p>$X$ ist normalverteilt mit $\sigma=${sg}$. Der Wert $x=${x}$ hat den z-Wert $${z}$. Wie groß ist $\mu$?</p>`,
+        mu, 0, [T`$\mu=x-z\sigma=${x}-${par(z)}\cdot ${sg}=${mu}$`], 'Umstellen von z = (x − μ)/σ nach μ.')
+      : mk(T`<p>$X$ ist normalverteilt mit $\mu=${mu}$. Der Wert $x=${x}$ hat den z-Wert $${z}$. Wie groß ist $\sigma$?</p>`,
+        sg, 0, [T`$\sigma=\frac{x-\mu}{z}=\frac{${x}-${mu}}{${par(z)}}=${sg}$`], 'Umstellen von z = (x − μ)/σ nach σ.');
+  }
+];
+
+for (const id of Object.keys(X)) {
+  const base = GEN[id], vs = X[id];
+  const all = [base, ...vs];
+  GEN[id] = () => {
+    const f = pick(all);
+    try { return f(); } catch (e) { return base(); }
+  };
+}
+
+/* ---------- Ergänzungen zu den Lektionen ---------- */
+L.ana_poly += T`<p><b>Zweite Ableitung:</b> noch einmal ableiten, $f''$. Beispiel: $f(x)=x^3-2x$ ergibt $f'=3x^2-2$ und $f''=6x$.</p>`;
+L.ana_chain += T`<p><b>Weitere Fälle:</b> $(e^{u})'=e^{u}\cdot u'$ und $(\sin u)'=\cos u\cdot u'$. Beispiel: $(e^{3x})'=3e^{3x}$.</p>`;
+L.ana_product += T`<p><b>Quotientenregel:</b> $\left(\frac uv\right)'=\frac{u'v-uv'}{v^2}$. Außerdem gilt $(e^x)'=e^x$.</p><p><b>Beispiel:</b> $\left(\frac{x+1}{x-1}\right)'=\frac{(x-1)-(x+1)}{(x-1)^2}=\frac{-2}{(x-1)^2}$.</p>`;
+L.ana_integral += T`<p><b>Weitere Stammfunktionen:</b> $\int e^x\,dx=e^x$ und $\int\frac1x\,dx=\ln|x|$. Eine Bedingung wie $F(0)=c$ legt die Konstante in $F(x)=\int f\,dx+C$ fest.</p>`;
+L.ana_extrem += T`<p><b>Wendestellen:</b> $f''(x)=0$. <b>Parabel</b> $ax^2+bx+c$: Scheitel bei $x=-\frac{b}{2a}$. <b>Extremwertaufgaben:</b> Zielfunktion aufstellen (Nebenbedingung einsetzen), ableiten, null setzen. Beispiel: Rechteck mit Umfang $U$: $A(a)=a(\tfrac U2-a)$, Maximum bei $a=\tfrac U4$.</p>`;
+L.ana_limit += T`<p><b>Typ „0/0“:</b> Zähler faktorisieren und kürzen, z. B. $\frac{x^2-9}{x-3}=x+3\to6$ für $x\to3$. <b>Ist der Nennergrad größer</b> als der Zählergrad, geht der Bruch für $x\to\infty$ gegen 0. Außerdem $\lim_{u\to0}\frac{e^{u}-1}{u}=1$.</p>`;
+L.ana_exp += T`<p><b>Weitere Fälle:</b> $a\,e^{kx}=m\Rightarrow x=\frac{\ln(m/a)}{k}$ und $\ln(ax)=k\Rightarrow x=\frac{e^k}{a}$. <b>Verdopplungszeit</b> bei $N(t)=N_0e^{kt}$: $t=\frac{\ln 2}{k}$.</p>`;
+L.la_dot += T`<p><b>Winkelform:</b> $\vec a\cdot\vec b=|\vec a||\vec b|\cos\varphi$. <b>Projektion:</b> Die vorzeichenbehaftete Länge der Projektion von $\vec a$ auf $\vec b$ ist $\frac{\vec a\cdot\vec b}{|\vec b|}$.</p>`;
+L.la_norm += T`<p><b>Abstand</b> zweier Punkte: $|\overrightarrow{PQ}|=|Q-P|$. <b>Einheitsvektor:</b> $\vec e=\frac{\vec v}{|\vec v|}$ hat Länge 1. In der Ebene: $|\vec v|=\sqrt{v_1^2+v_2^2}$.</p>`;
+L.la_det2 += T`<p><b>Rechenregeln:</b> $\det(AB)=\det A\cdot\det B$, $\det(A^{-1})=\frac1{\det A}$, $\det(kA)=k^n\det A$ für $n\times n$-Matrizen. Der Betrag der 2×2-Determinante ist der Flächeninhalt des von den Spalten aufgespannten Parallelogramms. $\det=0$ heißt: nicht invertierbar.</p>`;
+L.la_det3 += T`<p><b>Dreiecksmatrix:</b> Determinante = Produkt der Diagonale. <b>Spatprodukt:</b> $|\det|$ ist das Volumen des von drei Vektoren aufgespannten Spats. Sind Zeilen linear abhängig, ist die Determinante 0.</p>`;
+L.la_matmul += T`<p><b>Matrix mal Vektor:</b> wie das Matrixprodukt mit einer einzigen Spalte. <b>Spur:</b> Summe der Diagonaleinträge. $A^2=A\cdot A$ (Zeile mal Spalte, nicht eintragsweise quadrieren).</p>`;
+L.la_system += T`<p><b>3×3:</b> Cramer: $x_i=\frac{D_i}{D}$, wobei in $D_i$ die $i$-te Spalte durch die rechte Seite ersetzt wird. <b>Geradenschnitt:</b> $m_1x+b_1=m_2x+b_2$ gleichsetzen.</p>`;
+L.la_eigen += T`<p><b>Dreiecksmatrizen:</b> Die Eigenwerte sind die Diagonaleinträge. Allgemein: Summe der Eigenwerte = Spur, Produkt = Determinante. Für $\begin{pmatrix}a&b\\b&a\end{pmatrix}$ sind die Eigenwerte $a\pm b$.</p>`;
+L.st_mean += T`<p><b>Modalwert:</b> häufigster Wert. <b>Spannweite:</b> Maximum minus Minimum. <b>Gewichteter Mittelwert:</b> $\frac{\sum w_ix_i}{\sum w_i}$. Kommt ein Wert $w$ hinzu, ist der neue Mittelwert $\frac{n\bar x+w}{n+1}$.</p>`;
+L.st_var += T`<p><b>Grundgesamtheit:</b> $\sigma^2=\frac1n\sum(x_i-\mu)^2$. <b>Lineare Transformation:</b> $\operatorname{Var}(aX+b)=a^2\operatorname{Var}(X)$, $\sigma_{aX+b}=|a|\sigma_X$.</p>`;
+L.st_comb += T`<p><b>Mit Wiederholung:</b> $n^k$ (z. B. Codes). <b>Anordnungen:</b> $n!$. Unabhängige Auswahlen werden multipliziert: $\binom{m}{a}\binom{n}{b}$.</p>`;
+L.st_bayes += T`<p><b>Totale Wahrscheinlichkeit:</b> $P(B)=P(B\mid A)P(A)+P(B\mid\bar A)P(\bar A)$. <b>Unabhängig:</b> $P(A\cap B)=P(A)P(B)$ und $P(A\cup B)=P(A)+P(B)-P(A\cap B)$.</p>`;
+L.st_binom += T`<p><b>Kennwerte:</b> $E[X]=np$, $\sigma=\sqrt{np(1-p)}$. <b>Gegenereignis:</b> $P(X\ge1)=1-(1-p)^n$. $P(X\le1)=P(X=0)+P(X=1)$.</p>`;
+L.st_ev += T`<p><b>Varianz:</b> $\operatorname{Var}(X)=E[X^2]-(E[X])^2$. <b>Linearität:</b> $E[aX+b]=aE[X]+b$. Ein Spiel ist fair, wenn der erwartete Gewinn 0 ist.</p>`;
+L.st_z += T`<p><b>Aus der Faustregel:</b> Symmetrie nutzen. Zwischen $\mu$ und $\mu+\sigma$ liegen etwa 34 %, oberhalb von $\mu+\sigma$ etwa 16 %. Umstellen: $\sigma=\frac{x-\mu}{z}$ und $\mu=x-z\sigma$.</p>`;
+
+const TOPICS = { ana: 'Analysis', la: 'Lineare Algebra', st: 'Statistik & Wahrscheinlichkeit' };
+const SKILLS = [
+  ['ana_poly', 'ana', 'Ableiten: Potenzregel'],
+  ['ana_chain', 'ana', 'Kettenregel'],
+  ['ana_product', 'ana', 'Produkt- und Quotientenregel'],
+  ['ana_integral', 'ana', 'Bestimmte Integrale'],
+  ['ana_extrem', 'ana', 'Extremwerte'],
+  ['ana_limit', 'ana', 'Grenzwerte'],
+  ['ana_exp', 'ana', 'Exponentialgleichungen'],
+  ['la_dot', 'la', 'Skalarprodukt'],
+  ['la_norm', 'la', 'Vektorlänge'],
+  ['la_det2', 'la', 'Determinante 2×2'],
+  ['la_det3', 'la', 'Determinante 3×3'],
+  ['la_matmul', 'la', 'Matrixmultiplikation'],
+  ['la_system', 'la', 'Lineare Gleichungssysteme'],
+  ['la_eigen', 'la', 'Eigenwerte 2×2'],
+  ['st_mean', 'st', 'Mittelwert & Median'],
+  ['st_var', 'st', 'Varianz'],
+  ['st_comb', 'st', 'Kombinatorik'],
+  ['st_bayes', 'st', 'Bedingte Wahrscheinlichkeit (Bayes)'],
+  ['st_binom', 'st', 'Binomialverteilung'],
+  ['st_ev', 'st', 'Erwartungswert'],
+  ['st_z', 'st', 'Normalverteilung & z-Wert']
+].map(([id, topic, title]) => ({ id, topic, title, gen: GEN[id], lesson: L[id] }));
+// ==GEN-END==
+
+/* ================= App ================= */
+const KEY = 'mathe_auffrischen_v1';
+const DAY = 86400000;
+const BY = Object.fromEntries(SKILLS.map(s => [s.id, s]));
+const app = document.getElementById('app');
+const defState = () => ({ skills: {}, log: [], placement: {}, settings: { topics: ['ana', 'la', 'st'], workField: false } });
+const fresh = () => ({ ease: 2.3, interval: 0, reps: 0, due: 0, seen: false, att: 0, cor: 0 });
+const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+let S = loadState();
+let view = 'home';
+let sess = null;
+
+function loadState() {
+  const d = defState();
+  try {
+    const r = localStorage.getItem(KEY);
+    if (r) {
+      const o = JSON.parse(r);
+      return { skills: o.skills || {}, log: o.log || [], placement: o.placement || {}, settings: Object.assign(d.settings, o.settings || {}) };
+    }
+  } catch (e) { /* Speicher nicht verfügbar */ }
+  return d;
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignorieren */ } }
+const st = id => S.skills[id] || fresh();
+const isDue = id => st(id).seen && st(id).due <= Date.now();
+function status(id) {
+  const s = st(id);
+  if (!s.seen) return ['Neu', 'b-new'];
+  if (s.reps >= 3 && s.interval >= 7) return ['Gefestigt', 'b-solid'];
+  return ['Lernend', 'b-learn'];
+}
+function dueText(id) {
+  const s = st(id);
+  if (!s.seen) return 'noch nicht geübt';
+  if (s.due <= Date.now()) return 'fällig';
+  const d = Math.ceil((s.due - Date.now()) / DAY);
+  return `nächste Wiederholung in ${d} ${d === 1 ? 'Tag' : 'Tagen'}`;
+}
+
+function typeset(el) {
+  if (window.renderMathInElement) {
+    try {
+      window.renderMathInElement(el || app, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+    } catch (e) { /* ignorieren */ }
+  }
+}
+function draw(html) { app.innerHTML = html; typeset(); window.scrollTo(0, 0); }
+const katexWarn = () => (window.katex ? '' : '<div class="warn">KaTeX konnte nicht geladen werden (offline?). Formeln erscheinen als Quelltext; mit Internetverbindung beim Öffnen werden sie dargestellt.</div>');
+const workToggle = () => `<label class="toggle"><input type="checkbox" id="wchk" ${S.settings.workField ? 'checked' : ''} onchange="toggleWork(this.checked)"> Kein Stift und Papier zur Hand? Rechenweg-Feld einblenden</label>`;
+function toggleWork(on) {
+  S.settings.workField = !!on; save();
+  const b = document.getElementById('workbox'); if (b) b.style.display = on ? 'block' : 'none';
+}
+
+/* ---------- Home ---------- */
+function home() {
+  view = 'home'; sess = null;
+  const sel = S.settings.topics;
+  const inSel = SKILLS.filter(s => sel.includes(s.topic));
+  const dueN = inSel.filter(s => isDue(s.id)).length;
+  const newN = inSel.filter(s => !st(s.id).seen).length;
+  const att = inSel.reduce((a, s) => a + st(s.id).att, 0), cor = inSel.reduce((a, s) => a + st(s.id).cor, 0);
+  const acc = att ? Math.round(100 * cor / att) + ' %' : '–';
+  let h = `<h1>Mathe auffrischen</h1><p class="sub">Analysis, Lineare Algebra, Statistik. Kurze Sessions mit gemischten Aufgaben und zeitlich verteilten Wiederholungen.</p>${katexWarn()}`;
+  if (!Object.keys(S.placement).length && !SKILLS.some(s => st(s.id).seen)) {
+    h += `<div class="card"><h2>Neu hier?</h2><p style="margin:0 0 10px">Mach pro Fachgebiet zuerst den Einstufungstest (eine Aufgabe je Thema, kein Feedback währenddessen). So weiß die App, was du schon sicher kannst und womit die Lektionen beginnen sollen.</p><div class="row">${Object.entries(TOPICS).map(([k, v]) => `<button class="small" onclick="startPlacement('${k}')">${v}</button>`).join('')}</div></div>`;
+  }
+  h += `<div class="row">${Object.entries(TOPICS).map(([k, v]) => `<button class="chip ${sel.includes(k) ? 'on' : ''}" onclick="toggleTopic('${k}')">${v}</button>`).join('')}</div>${workToggle()}`;
+  h += `<div class="stats"><div class="stat"><b>${dueN}</b><span>fällig</span></div><div class="stat"><b>${newN}</b><span>neue Themen</span></div><div class="stat"><b>${acc}</b><span>richtig insgesamt</span></div></div>`;
+  h += `<div class="row"><button class="primary" onclick="startSession()">Session starten (10 Aufgaben)</button><span class="note">${dueN ? dueN + ' Thema/Themen fällig' : 'Nichts fällig: die Session nimmt neue Themen oder übt das Schwächste.'}</span></div>`;
+  for (const [tk, tn_] of Object.entries(TOPICS)) {
+    if (!sel.includes(tk)) continue;
+    const p = S.placement[tk];
+    let pnote = '';
+    if (p) {
+      const v = Object.values(p.res);
+      pnote = `<div class="note" style="margin:-4px 0 6px">Letzter Einstufungstest am ${new Date(p.t).toLocaleDateString('de-DE')}: ${v.filter(x => x === 'known').length} sicher, ${v.filter(x => x === 'partial').length} mit Lücken, ${v.filter(x => x === 'new').length} neu</div>`;
+    }
+    h += `<div class="card"><div class="row spread"><h2 style="margin:0">${tn_}</h2><button class="small" onclick="startPlacement('${tk}')">${p ? 'Einstufungstest wiederholen' : 'Einstufungstest'}</button></div>${pnote}<div style="margin-top:8px"></div>`;
+    for (const s of SKILLS.filter(x => x.topic === tk)) {
+      const z = st(s.id), [lab, cls] = status(s.id);
+      const pct = z.att ? Math.round(100 * z.cor / z.att) : 0;
+      h += `<div class="skill"><div><span class="t">${s.title}</span><span class="badge ${cls}">${lab}</span>${isDue(s.id) ? '<span class="badge b-due">fällig</span>' : ''}
+        <div class="meta">${dueText(s.id)}${z.att ? ` · ${z.cor}/${z.att} richtig` : ''}</div><div class="bar"><i style="width:${pct}%"></i></div></div>
+        <div class="row"><button class="small" onclick="showLesson('${s.id}',false)">Lektion</button><button class="small" onclick="startSession('${s.id}')">Üben</button></div></div>`;
+    }
+    h += '</div>';
+  }
+  h += `<div class="row" style="margin-top:20px"><button class="small" onclick="exportData()">Fortschritt exportieren</button><button class="small" onclick="document.getElementById('imp').click()">Importieren</button><button class="ghost small" onclick="resetData()">Zurücksetzen</button><input id="imp" type="file" accept="application/json" style="display:none" onchange="importData(this)"></div>
+  <p class="note">Der Fortschritt liegt in diesem Browser (localStorage). Exportiere ihn regelmäßig, wenn du ihn behalten willst, etwa beim Gerätewechsel oder wenn du Browserdaten löschst.</p>`;
+  draw(h);
+}
+function toggleTopic(k) {
+  const a = S.settings.topics, i = a.indexOf(k);
+  if (i >= 0) { if (a.length > 1) a.splice(i, 1); } else a.push(k);
+  save(); home();
+}
+
+/* ---------- Lektion ---------- */
+const LES = {
+  ana_poly: {
+    icon: '📈', min: 2, memo: T`Exponent nach vorn, Hochzahl um 1 kleiner.`,
+    hook: T`Die Ableitung zeigt, wie steil eine Kurve gerade ist, also wie schnell sich etwas ändert: Geschwindigkeit aus dem Weg, Zuwachs aus dem Bestand.`,
+    idea: T`Jeden Summanden einzeln behandeln: Die Hochzahl wandert als Faktor nach vorn und wird dann um 1 kleiner. Reine Zahlen ohne $x$ verschwinden.`,
+    rules: [[T`Potenzregel`, T`$(c\,x^n)'=c\cdot n\cdot x^{n-1}$`], [T`Summe`, T`$(f+g)'=f'+g'$`], [T`Konstante`, T`$(c)'=0$`]],
+    more: [[T`Zweite Ableitung`, T`$f''$ heißt: noch einmal ableiten, z. B. $(x^3-2x)''=(3x^2-2)'=6x$`]],
+    ex: {
+      task: T`Gegeben ist $f(x)=4x^3-5x+2$. Gesucht: $f'(2)$.`,
+      steps: [
+        T`Jeden Summanden einzeln ableiten: $4x^3\to 12x^2$, $\;-5x\to -5$, $\;2\to 0$`,
+        T`Zusammen: $f'(x)=12x^2-5$`,
+        T`Einsetzen: $f'(2)=12\cdot 4-5=43$`
+      ]
+    },
+    pitfall: T`Die Hochzahl wird nur <b>einmal</b> verringert: $(x^3)'=3x^2$, nicht $3x^3$ und nicht $x^2$. Und: erst ableiten, dann einsetzen.`
+  },
+  ana_chain: {
+    icon: '🔗', min: 2, memo: T`Außen ableiten, innen lassen, mal Ableitung des Inneren.`,
+    hook: T`Fast jede „echte“ Funktion ist verschachtelt: eine Klammer mit Potenz, eine e-Funktion mit linearem Exponenten, ein Sinus mit Argument.`,
+    idea: T`Zwei Schichten, zwei Schritte: erst die äußere Funktion ableiten (das Innere bleibt unverändert stehen), dann mit der Ableitung des Inneren multiplizieren.`,
+    rules: [[T`Kettenregel`, T`$[g(h(x))]'=g'(h(x))\cdot h'(x)$`], [T`e-Funktion`, T`$(e^{u})'=e^{u}\cdot u'$`], [T`Sinus`, T`$(\sin u)'=\cos u\cdot u'$`]],
+    more: [],
+    ex: {
+      task: T`Gegeben ist $f(x)=(3x-1)^4$. Gesucht: $f'(1)$.`,
+      steps: [
+        T`Außen: Potenz $u^4\to 4u^3$. Innen: $3x-1$ mit Ableitung $3$.`,
+        T`Zusammensetzen: $f'(x)=4\,(3x-1)^3\cdot 3$`,
+        T`Einsetzen: $f'(1)=4\cdot 2^3\cdot 3=96$`
+      ]
+    },
+    pitfall: T`Die <b>innere Ableitung</b> vergessen: $\big((3x-1)^4\big)'$ ist nicht $4(3x-1)^3$, sondern $4(3x-1)^3\cdot 3$.`
+  },
+  ana_product: {
+    icon: '✖️', min: 3, memo: T`Erst einer, dann der andere: $u'v+uv'$.`,
+    hook: T`Sobald zwei Ausdrücke mit $x$ miteinander multipliziert oder durcheinander geteilt werden, reicht die Potenzregel allein nicht mehr.`,
+    idea: T`Beim Produkt leitest du abwechselnd einen Faktor ab und lässt den anderen stehen, dann addierst du. Beim Bruch gilt die Quotientenregel: Zähler minus Zähler, alles durch Nenner zum Quadrat.`,
+    rules: [[T`Produktregel`, T`$(u\cdot v)'=u'v+uv'$`], [T`Quotientenregel`, T`$\displaystyle\left(\frac uv\right)'=\frac{u'v-uv'}{v^2}$`], [T`e-Funktion`, T`$(e^x)'=e^x$`]],
+    more: [],
+    ex: {
+      task: T`Gegeben ist $f(x)=(x^2+1)(2x-3)$. Gesucht: $f'(1)$.`,
+      steps: [
+        T`Faktoren benennen: $u=x^2+1$, $v=2x-3$ mit $u'=2x$, $v'=2$`,
+        T`Produktregel: $f'(x)=2x\,(2x-3)+(x^2+1)\cdot 2$`,
+        T`Einsetzen: $f'(1)=2\cdot(-1)+2\cdot 2=2$`
+      ]
+    },
+    pitfall: T`Nicht einfach $u'\cdot v'$ rechnen: $(u\cdot v)'\neq u'\cdot v'$. Bei der Quotientenregel zählt die Reihenfolge im Zähler: $u'v-uv'$.`
+  },
+  ana_integral: {
+    icon: '📐', min: 2, memo: T`Hochzahl plus 1, durch die neue Hochzahl teilen.`,
+    hook: T`Integrale berechnen Flächen, Gesamtmengen aus Änderungsraten und Durchschnittswerte, etwa den Weg aus der Geschwindigkeit.`,
+    idea: T`Integrieren ist das Rückwärts-Ableiten: Suche eine Stammfunktion $F$ mit $F'=f$, setze die Obergrenze ein und ziehe den Wert der Untergrenze ab.`,
+    rules: [[T`Potenzen`, T`$\displaystyle\int x^n\,dx=\frac{x^{n+1}}{n+1}$`], [T`Hauptsatz`, T`$\displaystyle\int_p^q f\,dx=F(q)-F(p)$`], [T`e-Funktion`, T`$\int e^x\,dx=e^x$`], [T`Kehrwert`, T`$\displaystyle\int\frac1x\,dx=\ln|x|$`]],
+    more: [[T`Bedingung`, T`$F(x)=\int f\,dx+C$: eine Bedingung wie $F(0)=c$ legt $C$ fest`]],
+    ex: {
+      task: T`Berechne $\displaystyle\int_0^2 (3x^2+2x)\,dx$.`,
+      steps: [
+        T`Stammfunktion bilden: $3x^2\to x^3$ und $2x\to x^2$, also $F(x)=x^3+x^2$`,
+        T`Grenzen einsetzen: $F(2)=8+4=12$ und $F(0)=0$`,
+        T`Obergrenze minus Untergrenze: $12-0=12$`
+      ]
+    },
+    pitfall: T`Beim Aufleiten durch die <b>neue</b> Hochzahl teilen ($\int x^2=\frac{x^3}{3}$, nicht $x^3$) und die Untergrenze nicht vergessen.`
+  },
+  ana_extrem: {
+    icon: '⛰️', min: 3, memo: T`Steigung null: Gipfel oder Tal. Die zweite Ableitung entscheidet.`,
+    hook: T`Maximaler Gewinn, minimales Material, bester Winkel: überall dort, wo etwas „optimal“ sein soll, sucht man Extremstellen.`,
+    idea: T`Am höchsten oder tiefsten Punkt ist die Tangente waagerecht, also $f'(x)=0$. Danach prüfst du mit $f''$, ob es ein Tal (Minimum) oder ein Berg (Maximum) ist.`,
+    rules: [[T`Notwendig`, T`$f'(x)=0$`], [T`Minimum`, T`$f''(x)>0$`], [T`Maximum`, T`$f''(x)<0$`], [T`Wendestelle`, T`$f''(x)=0$ (mit Vorzeichenwechsel)`]],
+    more: [[T`Parabel`, T`$ax^2+bx+c$ hat den Scheitel bei $\displaystyle x=-\frac{b}{2a}$`], [T`Extremwertaufgabe`, T`Nebenbedingung einsetzen, Zielfunktion ableiten, null setzen. Rechteck mit Umfang $U$: Maximum bei Seite $\frac U4$`]],
+    ex: {
+      task: T`Gegeben ist $f(x)=x^3-3x$. Bestimme Art und Lage der Extrempunkte bei $x=1$.`,
+      steps: [
+        T`Ableiten und null setzen: $f'(x)=3x^2-3=0\Rightarrow x=\pm 1$`,
+        T`Zweite Ableitung: $f''(x)=6x$, also $f''(1)=6>0$: <b>Minimum</b> bei $x=1$`,
+        T`Den y-Wert aus $f$ holen: $f(1)=1-3=-2$, Tiefpunkt $(1\,|\,-2)$`
+      ]
+    },
+    pitfall: T`Der y-Wert des Extrempunkts steckt in $f(x)$, nicht in $f'(x)$. Und $f'(x)=0$ allein sagt noch nicht, ob Minimum oder Maximum vorliegt.`
+  },
+  ana_limit: {
+    icon: '🎯', min: 3, memo: T`Durch die höchste Potenz teilen und schauen, was übrig bleibt.`,
+    hook: T`Grenzwerte zeigen, wohin eine Funktion „strebt“: Verhalten im Unendlichen, Lücken im Definitionsbereich, und sie stecken in der Definition der Ableitung.`,
+    idea: T`Bei Brüchen für $x\to\infty$ teilst du Zähler und Nenner durch die höchste Potenz, dann verschwinden alle $\frac1x$-Terme. Bei „$\frac00$“ faktorisierst du und kürzt.`,
+    rules: [[T`Gleicher Grad`, T`Grenzwert = Verhältnis der führenden Koeffizienten`], [T`Nennergrad größer`, T`Grenzwert $=0$`], [T`Standardgrenzwerte`, T`$\displaystyle\lim_{u\to0}\frac{\sin u}{u}=1,\quad\lim_{u\to0}\frac{e^{u}-1}{u}=1$`]],
+    more: [[T`Typ „0/0“`, T`$\displaystyle\frac{x^2-9}{x-3}=x+3\to 6$ für $x\to3$ (erst faktorisieren, dann kürzen)`]],
+    ex: {
+      task: T`Bestimme $\displaystyle\lim_{x\to\infty}\frac{3x^2+x}{2x^2+5}$.`,
+      steps: [
+        T`Höchste Potenz ist $x^2$: Zähler und Nenner durch $x^2$ teilen`,
+        T`$\displaystyle\frac{3+\frac1x}{2+\frac5{x^2}}$ und für $x\to\infty$ gilt $\frac1x\to0$, $\frac5{x^2}\to 0$`,
+        T`Übrig bleibt $\displaystyle\frac32$`
+      ]
+    },
+    pitfall: T`„$\frac\infty\infty$“ ist kein Ergebnis, sondern ein Hinweis zum Umformen. Zähler und Nenner nie einzeln „gegen unendlich“ laufen lassen und stehen lassen.`
+  },
+  ana_exp: {
+    icon: '🌱', min: 2, memo: T`$\ln$ ist die Rückfahrkarte von $e^{\ldots}$.`,
+    hook: T`Wachstum, Zerfall, Zinsen, Abkühlen: überall steckt $e^x$. Wenn die Unbekannte im Exponenten steckt, brauchst du den Logarithmus.`,
+    idea: T`$\ln$ macht $e^{\ldots}$ rückgängig. Du isolierst zuerst den $e$-Term (Vorfaktoren wegteilen), wendest dann $\ln$ an und löst die einfache Gleichung.`,
+    rules: [[T`Umkehrung`, T`$e^{u}=m\iff u=\ln m$`], [T`Mit Vorfaktor`, T`$\displaystyle a\,e^{kx}=m\Rightarrow x=\frac{\ln(m/a)}{k}$`], [T`Logarithmus`, T`$\displaystyle\ln(ax)=k\Rightarrow x=\frac{e^k}{a}$`]],
+    more: [[T`Verdopplungszeit`, T`$N(t)=N_0e^{kt}$ verdoppelt sich nach $\displaystyle t=\frac{\ln 2}{k}$`]],
+    ex: {
+      task: T`Löse $e^{2x}=7$ nach $x$ auf.`,
+      steps: [
+        T`$\ln$ auf beiden Seiten: $2x=\ln 7\approx 1{,}946$`,
+        T`Durch den Faktor vor $x$ teilen: $x=\dfrac{\ln 7}{2}\approx 0{,}973$`
+      ]
+    },
+    pitfall: T`Erst den Vorfaktor wegteilen, <b>dann</b> $\ln$ anwenden. Und: $\ln(a+b)\neq\ln a+\ln b$, nur Produkte lassen sich zerlegen.`
+  },
+  la_dot: {
+    icon: '↗️', min: 2, memo: T`Gleiche Stelle mal gleiche Stelle, alles addieren. Null heißt senkrecht.`,
+    hook: T`Das Skalarprodukt prüft, ob zwei Richtungen senkrecht stehen, und misst, wie sehr sie gleichgerichtet sind. In der Physik: Arbeit = Kraft · Weg.`,
+    idea: T`Die Komponenten paarweise multiplizieren und die Ergebnisse addieren. Heraus kommt eine einzelne Zahl, kein Vektor.`,
+    rules: [[T`Komponenten`, T`$\vec a\cdot\vec b=a_1b_1+a_2b_2+a_3b_3$`], [T`Senkrecht`, T`$\vec a\cdot\vec b=0\iff\vec a\perp\vec b$`], [T`Winkelform`, T`$\vec a\cdot\vec b=|\vec a||\vec b|\cos\varphi$`], [T`Projektion`, T`Länge der Projektion von $\vec a$ auf $\vec b$: $\displaystyle\frac{\vec a\cdot\vec b}{|\vec b|}$`]],
+    more: [],
+    ex: {
+      task: T`Berechne $(1,\,2,\,3)\cdot(4,\,-1,\,2)$.`,
+      steps: [
+        T`Paarweise multiplizieren: $1\cdot4=4$, $\;2\cdot(-1)=-2$, $\;3\cdot2=6$`,
+        T`Addieren: $4-2+6=8$`
+      ]
+    },
+    pitfall: T`Das Ergebnis ist eine <b>Zahl</b>. Wer die drei Produkte als Vektor stehen lässt, hat das Skalarprodukt noch nicht fertig.`
+  },
+  la_norm: {
+    icon: '📏', min: 2, memo: T`Quadrieren, addieren, Wurzel ziehen.`,
+    hook: T`Längen von Vektoren und Abstände zwischen Punkten: in Geometrie, Navigation und Computergrafik ständig gebraucht.`,
+    idea: T`Der Betrag ist Pythagoras in 3D: Die Quadrate der Komponenten addieren und daraus die Wurzel ziehen. Ein Abstand ist die Länge des Differenzvektors.`,
+    rules: [[T`Betrag`, T`$|\vec v|=\sqrt{v_1^2+v_2^2+v_3^2}$`], [T`Abstand`, T`$|\overrightarrow{PQ}|=|Q-P|$`], [T`Einheitsvektor`, T`$\displaystyle\vec e=\frac{\vec v}{|\vec v|}$ hat die Länge 1`]],
+    more: [[T`In der Ebene`, T`$|\vec v|=\sqrt{v_1^2+v_2^2}$`]],
+    ex: {
+      task: T`Berechne die Länge von $\vec v=(2,\,3,\,6)$.`,
+      steps: [
+        T`Quadrieren: $2^2=4$, $\;3^2=9$, $\;6^2=36$`,
+        T`Addieren und Wurzel: $\sqrt{4+9+36}=\sqrt{49}=7$`
+      ]
+    },
+    pitfall: T`Negative Komponenten werden beim Quadrieren positiv: $(-3)^2=9$. Und am Ende nicht die Wurzel vergessen.`
+  },
+  la_det2: {
+    icon: '🔲', min: 2, memo: T`Hauptdiagonale minus Nebendiagonale.`,
+    hook: T`Die Determinante verrät, ob eine Matrix umkehrbar ist und ein Gleichungssystem genau eine Lösung hat. Außerdem misst sie Flächen.`,
+    idea: T`Bei $2\times2$-Matrizen multiplizierst du die Hauptdiagonale und ziehst das Produkt der Nebendiagonale ab. Ist das Ergebnis $0$, ist die Matrix nicht invertierbar.`,
+    rules: [[T`Formel`, T`$\det\begin{pmatrix}a&b\\c&d\end{pmatrix}=ad-bc$`], [T`Fläche`, T`Parallelogramm aus den Spalten: Fläche $=|\det|$`], [T`Singulär`, T`$\det=0\iff$ nicht invertierbar`]],
+    more: [[T`Rechenregeln`, T`$\det(AB)=\det A\cdot\det B$, $\;\det(A^{-1})=\frac1{\det A}$, $\;\det(kA)=k^n\det A$ für $n\times n$`]],
+    ex: {
+      task: T`Berechne $\det\begin{pmatrix}3&1\\2&4\end{pmatrix}$.`,
+      steps: [
+        T`Hauptdiagonale: $3\cdot 4=12$`,
+        T`Nebendiagonale: $1\cdot 2=2$`,
+        T`Differenz: $12-2=10$`
+      ]
+    },
+    pitfall: T`Die Nebendiagonale wird <b>abgezogen</b>. Bei negativen Zahlen Klammern setzen, sonst rutscht das Vorzeichen.`
+  },
+  la_det3: {
+    icon: '🧊', min: 3, memo: T`Entwickeln mit Vorzeichen plus, minus, plus.`,
+    hook: T`Mit $3\times3$-Determinanten berechnest du Volumina und erkennst, ob drei Vektoren in einer Ebene liegen.`,
+    idea: T`Entwickle nach der ersten Zeile: Jedes Element mal die $2\times2$-Determinante der übrigen Zeilen und Spalten, mit den Vorzeichen $+\;-\;+$.`,
+    rules: [[T`Entwicklung`, T`$\det=a(ei-fh)-b(di-fg)+c(dh-eg)$`], [T`Dreiecksmatrix`, T`Determinante $=$ Produkt der Diagonale`], [T`Volumen`, T`Spat aus drei Vektoren: $V=|\det|$`], [T`Abhängig`, T`Linear abhängige Zeilen $\Rightarrow\det=0$`]],
+    more: [],
+    ex: {
+      task: T`Berechne die Determinante der Matrix mit den Zeilen $(1,\,2,\,0)$, $(0,\,1,\,3)$, $(2,\,0,\,1)$.`,
+      steps: [
+        T`Erstes Element: $1\cdot(1\cdot1-3\cdot0)=1$`,
+        T`Zweites Element mit Minus: $-2\cdot(0\cdot1-3\cdot2)=-2\cdot(-6)=12$`,
+        T`Drittes Element: $0\cdot(\ldots)=0$`,
+        T`Summe: $1+12+0=13$`
+      ]
+    },
+    pitfall: T`Das mittlere Vorzeichen ist <b>minus</b>: $+a(\ldots)-b(\ldots)+c(\ldots)$. Wer es vergisst, bekommt ein falsches Ergebnis.`
+  },
+  la_matmul: {
+    icon: '🧩', min: 2, memo: T`Zeile mal Spalte.`,
+    hook: T`Matrizen beschreiben Drehungen, Netzwerke und ganze Gleichungssysteme auf einmal. Das Produkt verkettet solche Abbildungen.`,
+    idea: T`Für den Eintrag in Zeile $i$, Spalte $j$ nimmst du Zeile $i$ der linken und Spalte $j$ der rechten Matrix, multiplizierst paarweise und addierst, wie bei einem Skalarprodukt.`,
+    rules: [[T`Eintrag`, T`$(AB)_{ij}=\sum_k a_{ik}\,b_{kj}$`], [T`Matrix mal Vektor`, T`wie das Produkt mit einer einzigen Spalte`], [T`Reihenfolge`, T`im Allgemeinen $AB\neq BA$`]],
+    more: [[T`Spur`, T`Summe der Diagonaleinträge`], [T`Quadrat`, T`$A^2=A\cdot A$ (nicht jeder Eintrag einzeln quadriert)`]],
+    ex: {
+      task: T`$A=\begin{pmatrix}1&2\\3&4\end{pmatrix}$, $B=\begin{pmatrix}0&1\\5&2\end{pmatrix}$. Gesucht: Eintrag in Zeile 2, Spalte 1 von $AB$.`,
+      steps: [
+        T`Zeile 2 von $A$: $(3,\,4)$. Spalte 1 von $B$: $(0,\,5)$`,
+        T`Paarweise multiplizieren und addieren: $3\cdot0+4\cdot5=20$`
+      ]
+    },
+    pitfall: T`Nicht die Einträge an <b>gleicher Position</b> multiplizieren. Es heißt Zeile mal Spalte, und $AB$ ist meistens nicht $BA$.`
+  },
+  la_system: {
+    icon: '🔎', min: 3, memo: T`Eine Unbekannte loswerden, zurückeinsetzen, Probe machen.`,
+    hook: T`Preise, Mischungsverhältnisse, Schnittpunkte: sobald mehrere Bedingungen gleichzeitig gelten, entsteht ein Gleichungssystem.`,
+    idea: T`Entweder eine Variable eliminieren (Gleichungen addieren oder subtrahieren) oder mit der Cramerschen Regel über Determinanten rechnen.`,
+    rules: [[T`Cramer 2×2`, T`$\displaystyle x=\frac{ed-bf}{D},\; y=\frac{af-ec}{D},\; D=ad-bc\neq0$`], [T`Cramer 3×3`, T`$\displaystyle x_i=\frac{D_i}{D}$ (Spalte $i$ durch die rechte Seite ersetzt)`], [T`Geradenschnitt`, T`$m_1x+b_1=m_2x+b_2$ gleichsetzen`]],
+    more: [],
+    ex: {
+      task: T`Löse $\;2x+y=7\;$ und $\;x-y=2$.`,
+      steps: [
+        T`Determinante: $D=2\cdot(-1)-1\cdot1=-3$`,
+        T`$D_x=7\cdot(-1)-1\cdot2=-9$ und $D_y=2\cdot2-7\cdot1=-3$`,
+        T`$x=\dfrac{-9}{-3}=3$ und $y=\dfrac{-3}{-3}=1$`,
+        T`Probe: $2\cdot3+1=7$ ✓ und $3-1=2$ ✓`
+      ]
+    },
+    pitfall: T`Die rechte Seite gehört in die Spalte der gesuchten Variablen, nicht irgendwohin. Und: immer die Probe in einer Gleichung machen.`
+  },
+  la_eigen: {
+    icon: '🌀', min: 3, memo: T`$\lambda^2-\text{Spur}\cdot\lambda+\text{Determinante}=0$.`,
+    hook: T`Eigenwerte zeigen, in welche Richtungen eine Matrix nur streckt oder staucht. Sie bestimmen Stabilität und Schwingverhalten von Systemen.`,
+    idea: T`Für $2\times2$-Matrizen lösen die Eigenwerte die quadratische Gleichung aus Spur und Determinante. Die Summe der Eigenwerte ergibt die Spur, ihr Produkt die Determinante.`,
+    rules: [[T`Gleichung`, T`$\lambda^2-\operatorname{Spur}(A)\,\lambda+\det A=0$`], [T`Probe`, T`$\lambda_1+\lambda_2=\operatorname{Spur}$, $\;\lambda_1\lambda_2=\det A$`], [T`Dreiecksmatrix`, T`Eigenwerte = Diagonaleinträge`]],
+    more: [[T`Symmetrisch`, T`$\begin{pmatrix}a&b\\b&a\end{pmatrix}$ hat die Eigenwerte $a\pm b$`]],
+    ex: {
+      task: T`Bestimme die Eigenwerte von $A=\begin{pmatrix}4&1\\2&3\end{pmatrix}$.`,
+      steps: [
+        T`Spur: $4+3=7$. Determinante: $4\cdot3-1\cdot2=10$`,
+        T`Gleichung: $\lambda^2-7\lambda+10=0$`,
+        T`Zwei Zahlen mit Summe 7 und Produkt 10: $\lambda_1=2$, $\lambda_2=5$`
+      ]
+    },
+    pitfall: T`Spur und Determinante nicht vertauschen. Zur Kontrolle: Die Summe der Eigenwerte muss die Spur sein, das Produkt die Determinante.`
+  },
+  st_mean: {
+    icon: '📊', min: 2, memo: T`Mittelwert: Summe durch Anzahl. Median: sortieren, Mitte nehmen.`,
+    hook: T`Durchschnittsnote, mittleres Gehalt, typischer Messwert: Mittelwert und Median fassen viele Zahlen in einer zusammen.`,
+    idea: T`Der Mittelwert teilt die Summe durch die Anzahl, der Median ist der mittlere Wert der sortierten Liste. Der Median wird von Ausreißern kaum beeinflusst.`,
+    rules: [[T`Mittelwert`, T`$\displaystyle\bar x=\frac1n\sum x_i$`], [T`Median`, T`Mitte der sortierten Liste (bei gerader Anzahl: Mittel der zwei mittleren)`], [T`Modalwert`, T`häufigster Wert`], [T`Spannweite`, T`Maximum minus Minimum`]],
+    more: [[T`Gewichtet`, T`$\displaystyle\frac{\sum w_ix_i}{\sum w_i}$, z. B. Noten mit ECTS-Gewichten`], [T`Neuer Wert`, T`neuer Mittelwert $\displaystyle\frac{n\bar x+w}{n+1}$`]],
+    ex: {
+      task: T`Datensatz: $2,\;3,\;7,\;8,\;10$. Bestimme Mittelwert und Median.`,
+      steps: [
+        T`Mittelwert: $\dfrac{2+3+7+8+10}{5}=\dfrac{30}{5}=6$`,
+        T`Median: die Liste ist schon sortiert, der mittlere (dritte) Wert ist $7$`
+      ]
+    },
+    pitfall: T`Den Median erst <b>nach dem Sortieren</b> bestimmen. Bei gerader Anzahl den Durchschnitt der zwei mittleren Werte nehmen.`
+  },
+  st_var: {
+    icon: '📉', min: 3, memo: T`Abweichung, quadrieren, summieren, durch $n-1$ teilen.`,
+    hook: T`Die Streuung zeigt, wie verlässlich ein Mittelwert ist: Zwei Datensätze können denselben Mittelwert haben und doch ganz verschieden „wackeln“.`,
+    idea: T`Die Varianz ist die mittlere quadratische Abweichung vom Mittelwert. Bei einer Stichprobe teilst du durch $n-1$, bei einer vollständigen Grundgesamtheit durch $n$.`,
+    rules: [[T`Stichprobe`, T`$\displaystyle s^2=\frac{1}{n-1}\sum(x_i-\bar x)^2$`], [T`Standardabweichung`, T`$s=\sqrt{s^2}$`], [T`Grundgesamtheit`, T`$\displaystyle\sigma^2=\frac1n\sum(x_i-\mu)^2$`]],
+    more: [[T`Umrechnen`, T`$\operatorname{Var}(aX+b)=a^2\operatorname{Var}(X)$, $\;\sigma_{aX+b}=|a|\sigma_X$`]],
+    ex: {
+      task: T`Berechne die Stichprobenvarianz von $2,\;4,\;6$.`,
+      steps: [
+        T`Mittelwert: $\bar x=4$`,
+        T`Abweichungsquadrate: $(2-4)^2=4$, $\;(4-4)^2=0$, $\;(6-4)^2=4$, Summe $=8$`,
+        T`Durch $n-1=2$ teilen: $s^2=\dfrac82=4$`
+      ]
+    },
+    pitfall: T`Bei der Stichprobe durch $n-1$ teilen, nicht durch $n$. Die Wurzel gehört erst ganz zum Schluss (für die Standardabweichung).`
+  },
+  st_comb: {
+    icon: '🎲', min: 3, memo: T`Erst fragen: Zählt die Reihenfolge?`,
+    hook: T`Zählen, ohne alles aufzulisten: Lotto, Passwörter, Teams, Sitzordnungen.`,
+    idea: T`Stelle zwei Fragen: Spielt die Reihenfolge eine Rolle? Darf ein Element mehrfach vorkommen? Daraus ergibt sich die passende Formel.`,
+    rules: [[T`Mit Wiederholung`, T`$n^k$ (z. B. Zahlenschloss)`], [T`Anordnungen`, T`$n!$`], [T`Mit Reihenfolge`, T`$\displaystyle\frac{n!}{(n-k)!}=n(n-1)\cdots(n-k+1)$`], [T`Ohne Reihenfolge`, T`$\displaystyle\binom nk=\frac{n!}{k!\,(n-k)!}$`]],
+    more: [[T`Mehrere Auswahlen`, T`unabhängige Möglichkeiten werden multipliziert: $\binom ma\binom nb$`]],
+    ex: {
+      task: T`Aus 5 Personen sollen 2 ausgewählt werden. Wie viele Möglichkeiten gibt es ohne und mit Reihenfolge?`,
+      steps: [
+        T`Ohne Reihenfolge: $\dbinom52=\dfrac{5\cdot4}{2\cdot1}=10$`,
+        T`Mit Reihenfolge (z. B. Platz 1 und Platz 2): $5\cdot4=20$`
+      ]
+    },
+    pitfall: T`Reihenfolge entscheidet: Ein Team wählen (egal wer zuerst) ist $\binom nk$, Plätze vergeben (wer wird Erster?) ist $n(n-1)\cdots$.`
+  },
+  st_bayes: {
+    icon: '🧪', min: 3, memo: T`Echte Treffer geteilt durch alle Treffer.`,
+    hook: T`Ein positiver Test heißt nicht automatisch „krank“. Der Satz von Bayes sagt, wie sicher du nach einem Befund wirklich sein kannst.`,
+    idea: T`Zähle alle Fälle mit positivem Test: die echten Treffer plus die Fehlalarme. Die Wahrscheinlichkeit ist der Anteil der echten Treffer daran.`,
+    rules: [[T`Bayes`, T`$\displaystyle P(A\mid B)=\frac{P(B\mid A)\,P(A)}{P(B\mid A)P(A)+P(B\mid\bar A)P(\bar A)}$`], [T`Total`, T`$P(B)=P(B\mid A)P(A)+P(B\mid\bar A)P(\bar A)$`], [T`Unabhängig`, T`$P(A\cap B)=P(A)P(B)$`]],
+    more: [[T`Vereinigung`, T`$P(A\cup B)=P(A)+P(B)-P(A\cap B)$`]],
+    ex: {
+      task: T`Prävalenz 1 %, Sensitivität 90 %, Falsch-positiv-Rate 10 %. Wie wahrscheinlich ist man krank bei positivem Test?`,
+      steps: [
+        T`Echte Treffer: $0{,}01\cdot0{,}9=0{,}009$`,
+        T`Fehlalarme: $0{,}99\cdot0{,}1=0{,}099$`,
+        T`Anteil: $\dfrac{0{,}009}{0{,}009+0{,}099}\approx 8{,}3\,\%$`
+      ]
+    },
+    pitfall: T`$P(A\mid B)$ ist nicht $P(B\mid A)$: „Der Test ist bei Kranken meist positiv“ heißt nicht „Positiv Getestete sind meist krank“, vor allem bei seltenen Krankheiten.`
+  },
+  st_binom: {
+    icon: '🪙', min: 3, memo: T`Anzahl der Wege mal Wahrscheinlichkeit eines Weges.`,
+    hook: T`Wie oft klappt etwas bei $n$ Versuchen? Qualitätskontrolle, Umfragen, Würfelspiele.`,
+    idea: T`Jede feste Abfolge mit $k$ Erfolgen hat die Wahrscheinlichkeit $p^k(1-p)^{n-k}$. Davon gibt es $\binom nk$ verschiedene.`,
+    rules: [[T`Wahrscheinlichkeit`, T`$\displaystyle P(X=k)=\binom nk p^k(1-p)^{n-k}$`], [T`Erwartungswert`, T`$E[X]=np$`], [T`Standardabweichung`, T`$\sigma=\sqrt{np(1-p)}$`], [T`Gegenereignis`, T`$P(X\ge1)=1-(1-p)^n$`]],
+    more: [[T`Bis höchstens 1`, T`$P(X\le1)=P(X=0)+P(X=1)$`]],
+    ex: {
+      task: T`Eine faire Münze wird 4-mal geworfen. Wie wahrscheinlich sind genau 2-mal Kopf?`,
+      steps: [
+        T`Anzahl der Wege: $\dbinom42=6$`,
+        T`Ein Weg: $0{,}5^2\cdot0{,}5^2=0{,}0625$`,
+        T`Zusammen: $6\cdot0{,}0625=0{,}375$`
+      ]
+    },
+    pitfall: T`Den Binomialkoeffizienten nicht vergessen, und $(1-p)$ mit der Hochzahl $n-k$ (nicht $k$) potenzieren.`
+  },
+  st_ev: {
+    icon: '🎰', min: 2, memo: T`Wert mal Wahrscheinlichkeit, alles addieren.`,
+    hook: T`Lohnt sich ein Spiel auf Dauer? Der Erwartungswert ist der durchschnittliche Ausgang bei sehr vielen Wiederholungen.`,
+    idea: T`Ein gewichteter Mittelwert: Jeden möglichen Wert mit seiner Wahrscheinlichkeit multiplizieren und alles addieren.`,
+    rules: [[T`Erwartungswert`, T`$E[X]=\sum x_i\,P(X=x_i)$`], [T`Varianz`, T`$\operatorname{Var}(X)=E[X^2]-(E[X])^2$`], [T`Linearität`, T`$E[aX+b]=a\,E[X]+b$`]],
+    more: [[T`Faires Spiel`, T`erwarteter Gewinn $=0$ (Auszahlung minus Einsatz)`]],
+    ex: {
+      task: T`Gewinn $0$ € mit $P=0{,}8$, Gewinn $10$ € mit $P=0{,}2$. Wie hoch ist der Erwartungswert?`,
+      steps: [
+        T`Jeden Wert gewichten: $0\cdot0{,}8=0$ und $10\cdot0{,}2=2$`,
+        T`Addieren: $E[X]=2$ €`
+      ]
+    },
+    pitfall: T`Beim Spiel den Einsatz abziehen. Zur Kontrolle: Die Wahrscheinlichkeiten müssen sich zu $1$ aufsummieren.`
+  },
+  st_z: {
+    icon: '🔔', min: 2, memo: T`$z$ zeigt, wie viele Standardabweichungen ein Wert vom Mittel entfernt ist.`,
+    hook: T`Wie außergewöhnlich ist ein Wert? Mit dem z-Wert lassen sich Ergebnisse aus ganz verschiedenen Verteilungen vergleichen.`,
+    idea: T`Der z-Wert rechnet einen Wert in „Anzahl Standardabweichungen vom Mittelwert“ um. Für Normalverteilungen gilt zusätzlich die Faustregel 68-95-99,7.`,
+    rules: [[T`z-Wert`, T`$\displaystyle z=\frac{x-\mu}{\sigma}$`], [T`Zurückrechnen`, T`$x=\mu+z\sigma$`], [T`Faustregel`, T`$\pm1\sigma\approx68\,\%$, $\;\pm2\sigma\approx95\,\%$, $\;\pm3\sigma\approx99{,}7\,\%$`]],
+    more: [[T`Symmetrie nutzen`, T`zwischen $\mu$ und $\mu+\sigma$ etwa 34 %, oberhalb von $\mu+\sigma$ etwa 16 %`]],
+    ex: {
+      task: T`$\mu=100$, $\sigma=15$. Wie groß ist der z-Wert von $x=130$?`,
+      steps: [
+        T`Abstand zum Mittelwert: $130-100=30$`,
+        T`In Standardabweichungen: $z=\dfrac{30}{15}=2$, der Wert liegt $2\sigma$ über dem Mittel`
+      ]
+    },
+    pitfall: T`Durch $\sigma$ teilen, nicht durch $\sigma^2$. Und das Vorzeichen beachten: Werte unterhalb des Mittelwerts haben ein negatives $z$.`
+  }
+};
+
+let lessonId = null, lq = null, stepsShown = 0;
+const ruleRow = r => `<div class="rule"><span class="rl">${r[0]}</span><span class="rf">${r[1]}</span></div>`;
+
+function showLesson(id, inSession) {
+  view = 'lesson'; lessonId = id; stepsShown = 0;
+  const s = BY[id], d = LES[id];
+  if (!d) {
+    draw(`<p class="tag">${TOPICS[s.topic]}</p><h1>${s.title}</h1><div class="card lesson">${s.lesson}</div>
+      <div class="row"><button class="primary" onclick="${inSession ? 'showQuestion(true)' : `startSession('${id}')`}">${inSession ? 'Weiter zur Aufgabe' : 'Dazu üben'}</button>${inSession ? '' : '<button onclick="home()">Zurück</button>'}</div>`);
+    return;
+  }
+  const n = d.ex.steps.length;
+  draw(`<div class="tc-${s.topic}">
+    <div class="lhead"><div class="lemoji">${d.icon}</div><div><div class="tag">${TOPICS[s.topic]} · Lesezeit ca. ${d.min} Min</div><h1 style="margin:2px 0 0">${s.title}</h1></div></div>
+    <div class="memo">🧠 Merksatz: ${d.memo}</div>
+    <div class="lcard"><div class="lt">🎯 Wozu das gut ist</div><p>${d.hook}</p></div>
+    <div class="lcard"><div class="lt">💡 Die Kernidee</div><p>${d.idea}</p></div>
+    <div class="lcard"><div class="lt">📌 Merkkasten</div>${d.rules.map(ruleRow).join('')}
+      ${d.more.length ? `<details class="more"><summary>Weitere Fälle und Rechenregeln</summary>${d.more.map(ruleRow).join('')}</details>` : ''}</div>
+    <div class="lcard"><div class="lt">🧮 Beispiel Schritt für Schritt</div>
+      <div class="extask">${d.ex.task}</div>
+      <p class="note">Rechne zuerst selbst, im Kopf oder auf Papier. Dann deckst du die Schritte nacheinander auf und vergleichst.</p>
+      <div id="steps">${d.ex.steps.map((t, i) => `<div class="lstep" style="display:none"><span class="sn">${i + 1}</span><div>${t}</div></div>`).join('')}</div>
+      <div class="row" style="margin-top:8px"><button id="stbtn" onclick="revealStep()">Ersten Schritt zeigen (1/${n})</button><button class="ghost small" id="stall" onclick="revealAll()">Alle zeigen</button><span id="stdone" class="note"></span></div></div>
+    <div class="lcard lc-bad"><div class="lt">⚠️ Typischer Fehler</div><p>${d.pitfall}</p></div>
+    <div class="lcard lc-mini"><div class="lt">✏️ Probier's gleich</div>
+      <div id="mq" class="q"></div>
+      <div class="row" style="margin-top:10px"><input id="mans" type="text" autocomplete="off" placeholder="Antwort"><button class="primary" onclick="miniCheck()">Prüfen</button><button onclick="miniHint()">Tipp</button><button onclick="newMini()">Neue Aufgabe</button></div>
+      <div id="mhint"></div><div id="mfb"></div>
+      <p class="note">Diese Übung zählt nicht für deinen Wiederholungsplan, sie ist nur zum Ausprobieren.</p></div>
+    <div class="row" style="margin-top:14px"><button class="primary" onclick="${inSession ? 'showQuestion(true)' : `startSession('${id}')`}">${inSession ? 'Weiter zur Aufgabe' : 'Dazu üben'}</button>${inSession ? '' : '<button onclick="home()">Zurück</button>'}</div></div>`);
+  newMini();
+}
+function revealStep() {
+  const st_ = document.querySelectorAll('#steps .lstep');
+  if (stepsShown < st_.length) { st_[stepsShown].style.display = 'flex'; stepsShown++; }
+  syncSteps(st_.length);
+}
+function revealAll() {
+  const st_ = document.querySelectorAll('#steps .lstep');
+  st_.forEach(e => { e.style.display = 'flex'; }); stepsShown = st_.length; syncSteps(st_.length);
+}
+function syncSteps(n) {
+  const b = document.getElementById('stbtn');
+  if (stepsShown >= n) {
+    b.style.display = 'none'; document.getElementById('stall').style.display = 'none';
+    document.getElementById('stdone').textContent = 'Fertig. Stimmt das mit deiner Rechnung überein?';
+  } else b.textContent = `Nächsten Schritt zeigen (${stepsShown + 1}/${n})`;
+}
+function newMini() {
+  const s = BY[lessonId];
+  lq = s.gen(); lq.done = false; lq.hint_ = false;
+  const box = document.getElementById('mq');
+  box.innerHTML = `${lq.q}<div class="note">${lq.note}</div>`;
+  const inp = document.getElementById('mans'); inp.value = ''; inp.disabled = false;
+  document.getElementById('mfb').innerHTML = ''; document.getElementById('mhint').innerHTML = '';
+  typeset(box);
+}
+function miniHint() {
+  if (!lq || lq.done) return;
+  const h = document.getElementById('mhint');
+  h.innerHTML = `<div class="hint">Tipp: ${lq.hint}</div>`; typeset(h);
+}
+function miniCheck() {
+  if (!lq || lq.done) return;
+  const inp = document.getElementById('mans'), fb = document.getElementById('mfb');
+  const v = parseNum(inp.value);
+  if (Number.isNaN(v)) { fb.innerHTML = '<div class="note" style="color:var(--bad)">Bitte eine Zahl eingeben (Dezimalzahl mit Komma/Punkt oder Bruch wie 3/4).</div>'; return; }
+  const ok = Math.abs(v - lq.ans) <= lq.tol;
+  lq.done = true; inp.disabled = true;
+  fb.innerHTML = `<div class="fb ${ok ? 'ok' : 'bad'}"><b>${ok ? 'Richtig! 🎉' : 'Nicht ganz.'}</b> ${ok ? '' : `Richtig wäre <b>${fm(lq.ans, lq.d)}</b>.`}
+    <div class="steps"><div><b>Lösungsweg:</b></div>${lq.steps.map(x => `<div>${x}</div>`).join('')}</div></div>`;
+  typeset(fb);
+}
+
+/* ---------- Session-Aufbau ---------- */
+function weakness(id) { const s = st(id); return (s.att ? s.cor / s.att : 0) + s.reps * 0.1; }
+function buildQueue(skillId) {
+  const N = 10;
+  let pool = [];
+  if (skillId) pool = [BY[skillId]];
+  else {
+    const now = Date.now();
+    const sk = SKILLS.filter(s => S.settings.topics.includes(s.topic));
+    const seen = sk.filter(s => st(s.id).seen);
+    const due = seen.filter(s => st(s.id).due <= now).sort((a, b) => st(a.id).due - st(b.id).due).slice(0, 6);
+    const unseen = sk.filter(s => !st(s.id).seen);
+    const nNew = due.length >= 5 ? 1 : due.length >= 2 ? 2 : 3;
+    const picked = [];
+    const cnt = t => seen.filter(s => s.topic === t).length + picked.filter(s => s.topic === t).length;
+    for (let i = 0; i < nNew; i++) {
+      const left = unseen.filter(s => !picked.includes(s));
+      if (!left.length) break;
+      const topics = [...new Set(left.map(s => s.topic))].sort((a, b) => cnt(a) - cnt(b));
+      picked.push(left.find(s => s.topic === topics[0]));
+    }
+    pool = [...due, ...picked];
+    if (pool.length < 3) {
+      const rest = seen.filter(s => !pool.includes(s)).sort((a, b) => weakness(a.id) - weakness(b.id)).slice(0, 4 - pool.length);
+      pool.push(...rest);
+    }
+    if (!pool.length) pool = sk.slice(0, 3);
+  }
+  const q = [];
+  let last = null;
+  while (q.length < N) {
+    let bag = shuffle(pool.map(s => s.id));
+    if (bag.length > 1 && bag[0] === last) bag.push(bag.shift());
+    for (const id of bag) { if (q.length < N) { q.push(id); last = id; } }
+  }
+  return q;
+}
+function startSession(skillId) {
+  sess = { mode: 'train', queue: buildQueue(skillId), i: 0, results: [], scored: new Set(), retried: new Set(), lessonShown: new Set(), q: null, hint: false, answered: false };
+  showQuestion(false);
+}
+function startPlacement(tk) {
+  sess = { mode: 'test', topic: tk, queue: SKILLS.filter(s => s.topic === tk).map(s => s.id), i: 0, items: [], retried: new Set(), q: null, hint: false, answered: false };
+  showQuestion(false);
+}
+
+/* ---------- Frage anzeigen ---------- */
+function showQuestion(afterLesson) {
+  view = 'quiz';
+  if (sess.i >= sess.queue.length) return sess.mode === 'test' ? placementResult() : summary();
+  const id = sess.queue[sess.i], s = BY[id], test = sess.mode === 'test';
+  if (!test && !afterLesson && !st(id).seen && !sess.lessonShown.has(id)) { sess.lessonShown.add(id); return showLesson(id, true); }
+  sess.q = s.gen(); sess.hint = false; sess.answered = false;
+  const pct = Math.round(100 * sess.i / sess.queue.length);
+  const label = test ? `Einstufungstest · ${TOPICS[sess.topic]}` : `${TOPICS[s.topic]} · ${s.title}`;
+  draw(`<div class="row spread"><span class="tag">${label}</span><span class="tag">Aufgabe ${sess.i + 1} / ${sess.queue.length}</span></div>
+    <div class="prog"><i style="width:${pct}%"></i></div>
+    <div class="card"><div class="q">${sess.q.q}</div>
+    <div class="row" style="margin-top:10px"><input id="ans" type="text" inputmode="text" autocomplete="off" placeholder="Antwort" autofocus>
+    ${test
+      ? `<button class="primary" id="chk" onclick="submit()">Weiter</button><button id="skipbtn" onclick="submit(true)">Weiß ich nicht</button>`
+      : `<button class="primary" id="chk" onclick="submit()">Prüfen</button><button id="hbtn" onclick="showHint()">Tipp</button>`}</div>
+    <div class="note">${sess.q.note}</div>
+    ${workToggle()}
+    <div id="workbox" style="display:${S.settings.workField ? 'block' : 'none'};margin-top:8px"><textarea id="work" rows="5" placeholder="Rechenweg: Zwischenschritte hier notieren (Strg+Enter prüft die Aufgabe)"></textarea></div>
+    <div id="hintbox"></div><div id="fb"></div></div>
+    <div class="row"><button class="ghost small" onclick="if(confirm('${test ? 'Test abbrechen? Die bisherigen Antworten gehen verloren.' : 'Session abbrechen?'}'))home()">Abbrechen</button></div>`);
+  const inp = document.getElementById('ans'); if (inp) inp.focus();
+}
+function showHint() {
+  if (sess.answered) return;
+  sess.hint = true;
+  document.getElementById('hintbox').innerHTML = `<div class="hint">Tipp: ${sess.q.hint}</div>`;
+  typeset();
+}
+function parseNum(raw) {
+  let s = String(raw).trim().replace(/\s+/g, '').replace(/%$/, '').replace(/−/g, '-').replace(',', '.');
+  if (/^-?\d+(\.\d+)?\/-?\d+(\.\d+)?$/.test(s)) { const [a, b] = s.split('/'); return b === '0' ? NaN : +a / +b; }
+  if (/^-?\d+(\.\d+)?$/.test(s)) return +s;
+  return NaN;
+}
+const workHTML = w => w.trim() ? `<div class="steps"><div><b>Dein Rechenweg:</b></div><div class="userwork">${esc(w)}</div></div>` : '';
+
+function submit(skip) {
+  if (!sess || sess.answered) return;
+  const inp = document.getElementById('ans');
+  const wEl = document.getElementById('work');
+  const work = wEl ? wEl.value : '';
+  const q = sess.q, id = sess.queue[sess.i];
+  let ok = false;
+  if (!skip) {
+    const v = parseNum(inp.value);
+    if (Number.isNaN(v)) {
+      document.getElementById('fb').innerHTML = `<div class="note" style="color:var(--bad)">Bitte eine Zahl eingeben (Dezimalzahl mit Komma/Punkt oder Bruch wie 3/4)${sess.mode === 'test' ? ' oder „Weiß ich nicht“ wählen' : ''}.</div>`;
+      return;
+    }
+    ok = Math.abs(v - q.ans) <= q.tol;
+  }
+
+  if (sess.mode === 'test') {
+    const attempt = sess.retried.has(id) ? 2 : 1;
+    sess.items.push({ id, q, given: inp.value, work, ok, skipped: !!skip, attempt });
+    if (!ok && !skip && attempt === 1) { sess.retried.add(id); sess.queue.push(id); }
+    sess.i++; showQuestion(false);
+    return;
+  }
+
+  sess.answered = true;
+  record(id, ok, sess.hint);
+  sess.results.push({ id, ok, hint: sess.hint });
+  if (!ok && !sess.retried.has(id)) { sess.retried.add(id); sess.queue.push(id); }
+  inp.disabled = true; if (wEl) wEl.disabled = true;
+  document.getElementById('chk').style.display = 'none';
+  document.getElementById('hbtn').style.display = 'none';
+  const last = sess.i + 1 >= sess.queue.length;
+  document.getElementById('fb').innerHTML = `<div class="fb ${ok ? 'ok' : 'bad'}"><b>${ok ? 'Richtig.' : 'Nicht ganz.'}</b> ${ok ? '' : `Richtig wäre <b>${fm(q.ans, q.d)}</b>.`}
+    ${ok && sess.hint ? ' (mit Tipp: wird morgen wiederholt)' : ''}${!ok ? ' Das Thema kommt später in dieser Session noch einmal.' : ''}
+    ${workHTML(work)}
+    <div class="steps"><div><b>Lösungsweg:</b></div>${q.steps.map(x => `<div>${x}</div>`).join('')}</div></div>
+    <div class="row" style="margin-top:12px"><button class="primary" onclick="next()">${last ? 'Auswertung' : 'Weiter'}</button><span class="note">Enter genügt</span></div>`;
+  typeset();
+}
+function next() { sess.i++; showQuestion(false); }
+function record(id, ok, hint) {
+  const now = Date.now();
+  const s = S.skills[id] || (S.skills[id] = fresh());
+  const wasDue = !s.seen || s.due <= now;
+  s.att++; if (ok) s.cor++; s.seen = true;
+  if (!sess.scored.has(id)) {
+    sess.scored.add(id);
+    if (ok && !hint) {
+      if (wasDue) {
+        s.reps++;
+        s.interval = s.reps === 1 ? 1 : s.reps === 2 ? 3 : Math.round(s.interval * s.ease);
+        s.ease = Math.min(2.8, s.ease + 0.05);
+        s.due = now + s.interval * DAY;
+      }
+    } else if (ok && hint) {
+      s.interval = 1; s.due = now + DAY; s.ease = Math.max(1.3, s.ease - 0.05);
+    } else {
+      s.reps = 0; s.interval = 0; s.due = now; s.ease = Math.max(1.3, s.ease - 0.2);
+    }
+  }
+  S.log.push({ t: now, id, ok, h: hint ? 1 : 0 });
+  if (S.log.length > 1000) S.log = S.log.slice(-1000);
+  save();
+}
+
+/* ---------- Auswertung Session ---------- */
+function summary() {
+  view = 'summary';
+  const r = sess.results, n = r.length, c = r.filter(x => x.ok).length;
+  const by = {};
+  r.forEach(x => { (by[x.id] = by[x.id] || { ok: 0, n: 0 }); by[x.id].n++; if (x.ok) by[x.id].ok++; });
+  let h = `<h1>Session beendet</h1><p class="sub">${c} von ${n} richtig (${n ? Math.round(100 * c / n) : 0} %).</p><div class="card"><table class="sum">`;
+  for (const [id, v] of Object.entries(by)) h += `<tr><td>${BY[id].title}</td><td>${v.ok}/${v.n} richtig</td><td class="meta">${dueText(id)}</td></tr>`;
+  h += `</table></div><div class="row"><button class="primary" onclick="startSession()">Noch eine Session</button><button onclick="home()">Übersicht</button></div>`;
+  draw(h);
+}
+
+/* ---------- Auswertung Einstufungstest ---------- */
+const PLACE = { known: ['Sicher', 'b-solid'], partial: ['Mit Lücken', 'b-learn'], new: ['Neu lernen', 'b-new'] };
+function placementResult() {
+  view = 'summary';
+  const tk = sess.topic, now = Date.now(), res = {};
+  const skills = SKILLS.filter(s => s.topic === tk);
+  for (const s of skills) {
+    const its = sess.items.filter(x => x.id === s.id);
+    const a1 = its.find(x => x.attempt === 1), a2 = its.find(x => x.attempt === 2);
+    let r = 'new';
+    if (a1 && a1.ok) r = 'known'; else if (a2 && a2.ok) r = 'partial';
+    res[s.id] = r;
+    const z = S.skills[s.id] || (S.skills[s.id] = fresh());
+    z.att += its.length; z.cor += its.filter(x => x.ok).length;
+    if (r === 'known' && (!z.seen || z.reps < 2)) Object.assign(z, { seen: true, reps: 2, interval: 4, ease: Math.max(z.ease, 2.4), due: now + 4 * DAY });
+    else if (r === 'partial' && !z.seen) Object.assign(z, { seen: true, reps: 1, interval: 1, due: now + DAY });
+  }
+  S.placement[tk] = { t: now, res };
+  save();
+  const v = Object.values(res), k = v.filter(x => x === 'known').length, p = v.filter(x => x === 'partial').length, n = v.filter(x => x === 'new').length;
+  const wrong = sess.items.filter(x => !x.ok);
+  let h = `<h1>Ergebnis: ${TOPICS[tk]}</h1><p class="sub">${k} von ${skills.length} Themen sicher, ${p} mit Lücken, ${n} neu zu lernen.</p>`;
+  h += `<div class="card"><table class="sum">${skills.map(s => { const [lab, cls] = PLACE[res[s.id]]; return `<tr><td>${s.title}</td><td><span class="badge ${cls}" style="margin-left:0">${lab}</span></td></tr>`; }).join('')}</table></div>`;
+  if (wrong.length) {
+    h += `<div class="card"><h2>Zum Nachlesen</h2>${wrong.map(x => `<details><summary>${BY[x.id].title} (Versuch ${x.attempt})${x.skipped ? ', übersprungen' : ''}</summary>
+      <div class="q">${x.q.q}</div>
+      <div class="steps"><div>Deine Antwort: <b>${x.skipped ? '–' : esc(x.given)}</b> · Richtig: <b>${fm(x.q.ans, x.q.d)}</b></div>
+      ${x.work.trim() ? `<div><b>Dein Rechenweg:</b></div><div class="userwork">${esc(x.work)}</div>` : ''}
+      <div><b>Lösungsweg:</b></div>${x.q.steps.map(t => `<div>${t}</div>`).join('')}</div></details>`).join('')}</div>`;
+  }
+  h += `<p class="note">„Sicher“ heißt: erste Aufgabe richtig. Diese Themen werden in ein paar Tagen zur Wiederholung fällig. „Mit Lücken“ heißt: erst die zweite Aufgabe richtig, Wiederholung morgen. „Neu lernen“ startet in der nächsten Session mit der Lektion. Pro Thema wurden nur ein bis zwei Aufgaben gestellt, das ist eine grobe Einschätzung und kein Zeugnis: Ein Flüchtigkeitsfehler kann ein Thema schlechter aussehen lassen.</p>
+  <div class="row"><button class="primary" onclick="startSession()">Session starten</button><button onclick="home()">Übersicht</button></div>`;
+  draw(h);
+}
+
+/* ---------- Daten ---------- */
+function exportData() {
+  const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'mathe-fortschritt.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function importData(el) {
+  const f = el.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const o = JSON.parse(rd.result);
+      if (!o || typeof o.skills !== 'object') throw new Error('format');
+      if (!confirm('Aktuellen Fortschritt durch die Datei ersetzen?')) return;
+      S = { skills: o.skills, log: o.log || [], placement: o.placement || {}, settings: Object.assign(defState().settings, o.settings || {}) };
+      save(); home();
+    } catch (e) { alert('Die Datei konnte nicht gelesen werden.'); }
+  };
+  rd.readAsText(f);
+}
+function resetData() {
+  if (!confirm('Gesamten Fortschritt löschen?')) return;
+  S = defState(); save(); home();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && view === 'lesson' && e.target && e.target.id === 'mans') { e.preventDefault(); miniCheck(); return; }
+  if (e.key !== 'Enter' || view !== 'quiz' || !sess || !sess.q) return;
+  const inArea = e.target && e.target.tagName === 'TEXTAREA';
+  if (inArea && !(e.ctrlKey || e.metaKey)) return;
+  e.preventDefault();
+  if (sess.mode === 'test') { submit(); return; }
+  if (sess.answered) next(); else submit();
+});
+document.addEventListener('DOMContentLoaded', home);
+if (document.readyState !== 'loading') home();
+</script>
+</body>
+</html>
