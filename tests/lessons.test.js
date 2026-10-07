@@ -72,6 +72,23 @@ w.addEventListener('load', () => {
     check(/Weiter zur Aufgabe/.test(app.innerHTML), id + ': Button in der Session');
   }
 
+  // Veranschaulichungen: gültiges XML, keine NaN-Koordinaten, nur in Lektionen mit Grafik
+  const vizIds = w.eval('Object.keys(VIZ)');
+  check(vizIds.length >= 8 && vizIds.every(id => ids.includes(id)), 'Veranschaulichungen gehören zu existierenden Themen');
+  for (const id of ids) {
+    w.eval(`showLesson('${id}', false)`);
+    const has = !!w.document.querySelector('.viz svg');
+    check(has === vizIds.includes(id), id + ': Grafik nur in Lektionen mit VIZ-Eintrag');
+  }
+  for (const id of vizIds) {
+    const svg = w.eval(`VIZ['${id}'].svg()`);
+    check(!/NaN|undefined|Infinity/.test(svg), id + ': Grafik ohne ungültige Zahlen');
+    const doc = new w.DOMParser().parseFromString(svg, 'image/svg+xml');
+    check(!doc.querySelector('parsererror'), id + ': Grafik ist wohlgeformtes XML');
+    check(/role="img"/.test(svg) && /aria-label="[^"]{10,}"/.test(svg), id + ': Grafik hat Textalternative');
+    check(!/\$/.test(w.eval(`VIZ['${id}'].cap`)), id + ': Bildunterschrift ohne TeX');
+  }
+
   for (const id of ids) {
     for (let i = 0; i < GEN_RUNS; i++) {
       const q = w.eval(`SKILLS.find(s=>s.id==='${id}').gen()`);

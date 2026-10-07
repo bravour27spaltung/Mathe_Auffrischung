@@ -36,7 +36,7 @@ button.small{padding:4px 10px;font-size:.88rem}
 button.ghost{border-color:transparent;background:transparent;color:var(--muted);text-decoration:underline}
 .chip{border-radius:999px;padding:5px 14px;font-size:.92rem}
 .chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .stat b{display:block;font-size:1.5rem;font-family:Georgia,serif}
 .stat span{color:var(--muted);font-size:.88rem}
@@ -102,8 +102,32 @@ details.more summary{color:var(--tc);font-weight:600}
 .lc-bad{border-left-color:var(--bad)}
 .lc-mini{border-left-color:var(--accent)}
 @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){.lstep{animation:none}}
-@media (max-width:520px){.stats{grid-template-columns:1fr 1fr 1fr}.stat b{font-size:1.2rem}.rule{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){.lstep{animation:none}.prog i{transition:none}}
+/* Heute-Karte, Wochenrhythmus, Hilfe, Rückmeldung */
+.today{border-left:4px solid var(--accent)}
+.today .lead{font-size:1.05rem;font-weight:600;margin:2px 0 4px}
+.week{display:flex;gap:8px;margin:12px 0 4px}
+.day{flex:1;max-width:44px;text-align:center;font-size:.75rem;color:var(--muted)}
+.day i{display:block;width:24px;height:24px;border-radius:50%;margin:3px auto 0;border:2px solid var(--line);font-style:normal;line-height:20px;font-size:.8rem;color:var(--accent-ink)}
+.day.on i{background:var(--accent);border-color:var(--accent)}
+.day.now{color:var(--ink);font-weight:700}
+.day.now i{border-color:var(--ink)}
+.day.on.now i{border-color:var(--accent)}
+.stepper{display:inline-flex;align-items:center;gap:6px}
+.stepper button{padding:2px 10px}
+.example{background:var(--learn-bg);border-radius:10px;padding:10px 14px;margin-top:12px}
+.example .q{font-size:1rem}
+.fixbox{background:var(--new-bg);border-radius:10px;padding:10px 14px;margin-top:10px}
+.chg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line)}
+.chg:first-of-type{border-top:0}
+.chg .t{font-weight:600}
+.viz svg{display:block;width:100%;max-width:520px;height:auto;margin:4px auto 0}
+.viz text{font:13px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fill:var(--ink)}
+.viz text.m{fill:var(--muted);font-size:12px}
+.viz text.k{fill:var(--tc);font-weight:700}
+.viz text.r{fill:var(--bad);font-weight:700}
+.viz text.n{fill:var(--new);font-weight:700}
+@media (max-width:520px){.stats{grid-template-columns:1fr 1fr}.stat b{font-size:1.2rem}.rule{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1412,7 +1436,7 @@ const KEY = 'mathe_auffrischen_v1';
 const DAY = 86400000;
 const BY = Object.fromEntries(SKILLS.map(s => [s.id, s]));
 const app = document.getElementById('app');
-const defState = () => ({ skills: {}, log: [], placement: {}, settings: { topics: ['ana', 'la', 'st'], workField: false } });
+const defState = () => ({ skills: {}, log: [], placement: {}, days: [], settings: { topics: ['ana', 'la', 'st'], workField: false, weeklyGoal: 3, sessionLen: 10 } });
 const fresh = () => ({ ease: 2.3, interval: 0, reps: 0, due: 0, seen: false, att: 0, cor: 0 });
 const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 let S = loadState();
@@ -1425,7 +1449,7 @@ function loadState() {
     const r = localStorage.getItem(KEY);
     if (r) {
       const o = JSON.parse(r);
-      return { skills: o.skills || {}, log: o.log || [], placement: o.placement || {}, settings: Object.assign(d.settings, o.settings || {}) };
+      return { skills: o.skills || {}, log: o.log || [], placement: o.placement || {}, days: Array.isArray(o.days) ? o.days : [], settings: Object.assign(d.settings, o.settings || {}) };
     }
   } catch (e) { /* Speicher nicht verfügbar */ }
   return d;
@@ -1439,6 +1463,7 @@ function status(id) {
   if (s.reps >= 3 && s.interval >= 7) return ['Gefestigt', 'b-solid'];
   return ['Lernend', 'b-learn'];
 }
+const STATUS_CLS = { Neu: 'b-new', Lernend: 'b-learn', Gefestigt: 'b-solid' };
 function dueText(id) {
   const s = st(id);
   if (!s.seen) return 'noch nicht geübt';
@@ -1446,6 +1471,37 @@ function dueText(id) {
   const d = Math.ceil((s.due - Date.now()) / DAY);
   return `nächste Wiederholung in ${d} ${d === 1 ? 'Tag' : 'Tagen'}`;
 }
+
+/* ---------- Lerntage und Wochenrhythmus ---------- */
+const pad2 = n => String(n).padStart(2, '0');
+const dayKey = t => { const d = new Date(t); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+function markDay() {
+  const k = dayKey(Date.now());
+  if (!S.days.includes(k)) { S.days.push(k); if (S.days.length > 120) S.days = S.days.slice(-120); }
+}
+function weekDays() {
+  const now = new Date(), dow = (now.getDay() + 6) % 7;
+  return ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((label, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow + i);
+    return { label, key: dayKey(d), now: i === dow };
+  });
+}
+const weekDone = () => weekDays().filter(d => S.days.includes(d.key)).length;
+function weekStrip() {
+  return `<div class="week" role="group" aria-label="Lerntage dieser Woche">${weekDays().map(d => {
+    const on = S.days.includes(d.key);
+    return `<div class="day${on ? ' on' : ''}${d.now ? ' now' : ''}" title="${d.label}${on ? ': gelernt' : ''}"><span>${d.label}</span><i>${on ? '✓' : ''}</i></div>`;
+  }).join('')}</div>`;
+}
+function goalText() {
+  const done = weekDone(), goal = S.settings.weeklyGoal, left = goal - done;
+  if (left <= 0) return `Wochenziel erreicht: ${done} von ${goal} Lerntagen. Alles Weitere ist Zugabe.`;
+  return `${done} von ${goal} Lerntagen in dieser Woche. Noch ${left} ${left === 1 ? 'Tag' : 'Tage'} bis zum Wochenziel. Ein verpasster Tag ist kein Drama: Regelmäßigkeit zählt, nicht Lückenlosigkeit.`;
+}
+function setGoal(delta) {
+  S.settings.weeklyGoal = Math.min(7, Math.max(1, S.settings.weeklyGoal + delta)); save(); home();
+}
+function setLen(n) { S.settings.sessionLen = n; save(); home(); }
 
 function typeset(el) {
   if (window.renderMathInElement) {
@@ -1475,9 +1531,20 @@ function home() {
   if (!Object.keys(S.placement).length && !SKILLS.some(s => st(s.id).seen)) {
     h += `<div class="card"><h2>Neu hier?</h2><p style="margin:0 0 10px">Mach pro Fachgebiet zuerst den Einstufungstest (eine Aufgabe je Thema, kein Feedback währenddessen). So weiß die App, was du schon sicher kannst und womit die Lektionen beginnen sollen.</p><div class="row">${Object.entries(TOPICS).map(([k, v]) => `<button class="small" onclick="startPlacement('${k}')">${v}</button>`).join('')}</div></div>`;
   }
+  const len = S.settings.sessionLen, goal = S.settings.weeklyGoal;
+  const solidN = inSel.filter(s => status(s.id)[0] === 'Gefestigt').length;
+  let lead, why;
+  if (dueN) { lead = `Heute dran: ${dueN} ${dueN === 1 ? 'fälliges Thema' : 'fällige Themen'}`; why = newN ? 'Dazu kommen ein bis drei neue Themen für Abwechslung.' : 'Wiederholungen mit zeitlichem Abstand halten länger als Pauken am Stück.'; }
+  else if (newN) { lead = `Bereit für Neues: ${newN} ${newN === 1 ? 'Thema wartet' : 'Themen warten'}`; why = 'Neue Themen beginnen mit einer kurzen Lektion.'; }
+  else { lead = 'Alles wiederholt, gut gemacht'; why = 'Wenn du magst, übt die Session das Schwächste, sonst kommst du morgen wieder.'; }
+  h += `<div class="card today"><div class="row spread"><h2 style="margin:0">Heute</h2>
+    <span class="stepper tag">Wochenziel <button class="small" aria-label="Wochenziel senken" onclick="setGoal(-1)">−</button><b>${goal}</b><button class="small" aria-label="Wochenziel erhöhen" onclick="setGoal(1)">+</button> Lerntage</span></div>
+    <p class="lead">${lead}</p><p class="note" style="margin-top:0">${why}</p>
+    ${weekStrip()}<p class="note" style="margin-top:2px">${goalText()}</p>
+    <div class="row" style="margin-top:12px"><button class="primary" onclick="startSession()">Session starten (${len} Aufgaben)</button>
+    <span class="tag">Länge:</span>${[5, 10, 15].map(n => `<button class="chip small ${n === len ? 'on' : ''}" onclick="setLen(${n})">${n}</button>`).join('')}</div></div>`;
   h += `<div class="row">${Object.entries(TOPICS).map(([k, v]) => `<button class="chip ${sel.includes(k) ? 'on' : ''}" onclick="toggleTopic('${k}')">${v}</button>`).join('')}</div>${workToggle()}`;
-  h += `<div class="stats"><div class="stat"><b>${dueN}</b><span>fällig</span></div><div class="stat"><b>${newN}</b><span>neue Themen</span></div><div class="stat"><b>${acc}</b><span>richtig insgesamt</span></div></div>`;
-  h += `<div class="row"><button class="primary" onclick="startSession()">Session starten (10 Aufgaben)</button><span class="note">${dueN ? dueN + ' Thema/Themen fällig' : 'Nichts fällig: die Session nimmt neue Themen oder übt das Schwächste.'}</span></div>`;
+  h += `<div class="stats"><div class="stat"><b>${dueN}</b><span>fällig</span></div><div class="stat"><b>${newN}</b><span>neue Themen</span></div><div class="stat"><b>${solidN}/${inSel.length}</b><span>gefestigt</span></div><div class="stat"><b>${acc}</b><span>richtig insgesamt</span></div></div>`;
   for (const [tk, tn_] of Object.entries(TOPICS)) {
     if (!sel.includes(tk)) continue;
     const p = S.placement[tk];
@@ -1486,7 +1553,9 @@ function home() {
       const v = Object.values(p.res);
       pnote = `<div class="note" style="margin:-4px 0 6px">Letzter Einstufungstest am ${new Date(p.t).toLocaleDateString('de-DE')}: ${v.filter(x => x === 'known').length} sicher, ${v.filter(x => x === 'partial').length} mit Lücken, ${v.filter(x => x === 'new').length} neu</div>`;
     }
-    h += `<div class="card"><div class="row spread"><h2 style="margin:0">${tn_}</h2><button class="small" onclick="startPlacement('${tk}')">${p ? 'Einstufungstest wiederholen' : 'Einstufungstest'}</button></div>${pnote}<div style="margin-top:8px"></div>`;
+    const tsk = SKILLS.filter(x => x.topic === tk), tSolid = tsk.filter(x => status(x.id)[0] === 'Gefestigt').length, tLearn = tsk.filter(x => status(x.id)[0] === 'Lernend').length;
+    h += `<div class="card"><div class="row spread"><h2 style="margin:0">${tn_}</h2><button class="small" onclick="startPlacement('${tk}')">${p ? 'Einstufungstest wiederholen' : 'Einstufungstest'}</button></div>
+      <div class="meta" style="margin-top:6px">${tSolid} von ${tsk.length} Themen gefestigt${tLearn ? ` · ${tLearn} in Arbeit` : ''}</div><div class="prog" style="margin:4px 0 8px" role="progressbar" aria-valuemin="0" aria-valuemax="${tsk.length}" aria-valuenow="${tSolid}" aria-label="${tn_}: gefestigte Themen"><i style="width:${Math.round(100 * tSolid / tsk.length)}%"></i></div>${pnote}`;
     for (const s of SKILLS.filter(x => x.topic === tk)) {
       const z = st(s.id), [lab, cls] = status(s.id);
       const pct = z.att ? Math.round(100 * z.cor / z.att) : 0;
@@ -1840,6 +1909,137 @@ const LES = {
   }
 };
 
+/* ---------- Veranschaulichungen (inline-SVG, Farben aus dem Themen-Farbschema) ---------- */
+const f1 = v => (Math.round(v * 10) / 10).toFixed(1);
+const minus = v => String(v).replace('-', '−');
+const svgBox = (label, inner) => `<svg viewBox="0 0 420 240" role="img" aria-label="${label}">${inner}</svg>`;
+const sLine = (x1, y1, x2, y2, o = '') => `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" ${o}/>`;
+const sText = (x, y, s, cls = '', anchor = 'start') => `<text x="${f1(x)}" y="${f1(y)}" text-anchor="${anchor}" class="${cls}">${s}</text>`;
+const sDot = (x, y, col = 'var(--tc)', r = 4.5) => `<circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="${col}"/>`;
+const sArrow = (x1, y1, x2, y2, col, w = 3) => {
+  const a = Math.atan2(y2 - y1, x2 - x1), h = 11;
+  const p = [[x2, y2], [x2 - h * Math.cos(a - 0.38), y2 - h * Math.sin(a - 0.38)], [x2 - h * Math.cos(a + 0.38), y2 - h * Math.sin(a + 0.38)]];
+  return sLine(x1, y1, x2 - 6 * Math.cos(a), y2 - 6 * Math.sin(a), `stroke="${col}" stroke-width="${w}" stroke-linecap="round"`) + `<polygon points="${p.map(q => f1(q[0]) + ',' + f1(q[1])).join(' ')}" fill="${col}"/>`;
+};
+const sScale = (xa, xb, ya, yb) => { const L = 40, R = 404, Tp = 16, B = 212; return { X: x => L + (x - xa) / (xb - xa) * (R - L), Y: y => B - (y - ya) / (yb - ya) * (B - Tp), L, R, Tp, B }; };
+const sCurve = (f, xa, xb, sc, n = 140) => Array.from({ length: n + 1 }, (_, i) => { const x = xa + (xb - xa) * i / n; return (i ? 'L' : 'M') + f1(sc.X(x)) + ' ' + f1(sc.Y(f(x))); }).join('');
+function sAxes(sc, xa, xb, ya, yb, xt, yt) {
+  const ax = sc.Y(Math.min(Math.max(0, ya), yb)), ay = sc.X(Math.min(Math.max(0, xa), xb));
+  let s = `<g stroke="var(--muted)" stroke-width="1.2">${sLine(sc.L, ax, sc.R, ax)}${sLine(ay, sc.Tp, ay, sc.B)}`;
+  xt.forEach(v => { s += sLine(sc.X(v), ax - 3, sc.X(v), ax + 3); });
+  yt.forEach(v => { s += sLine(ay - 3, sc.Y(v), ay + 3, sc.Y(v)); });
+  s += '</g>';
+  xt.forEach(v => { if (v !== 0) s += sText(sc.X(v), ax + 17, minus(v), 'm', 'middle'); });
+  yt.forEach(v => { if (v !== 0) s += sText(ay - 7, sc.Y(v) + 4, minus(v), 'm', 'end'); });
+  return s;
+}
+const VIZ = {
+  ana_poly: {
+    cap: 'Die Ableitung an einer Stelle ist die Steigung der Tangente. Hier gilt f′(1) = 2: eine Einheit nach rechts, zwei nach oben.',
+    svg() {
+      const sc = sScale(-1.5, 4.6, -1.5, 10), f = x => x * x, X = sc.X, Y = sc.Y;
+      return svgBox('Parabel mit Tangente an der Stelle 1 und Steigungsdreieck', sAxes(sc, -1.5, 4.6, -1.5, 10, [-1, 1, 2, 3, 4], [2, 4, 6, 8]) +
+        `<path d="${sCurve(f, -1.45, 3.1, sc)}" fill="none" stroke="var(--tc)" stroke-width="3"/>` +
+        sLine(X(-0.2), Y(-1.4), X(2.7), Y(4.4), 'stroke="var(--new)" stroke-width="2.5"') +
+        sLine(X(1), Y(1), X(2), Y(1), 'stroke="var(--muted)" stroke-dasharray="4 3" stroke-width="1.6"') + sLine(X(2), Y(1), X(2), Y(3), 'stroke="var(--muted)" stroke-dasharray="4 3" stroke-width="1.6"') +
+        sDot(X(1), Y(1), 'var(--new)', 5) +
+        sText(X(-1.4), Y(6.5), 'f(x) = x²', 'k') + sText(X(1) - 9, Y(1) - 9, 'x₀ = 1', '', 'end') +
+        sText(X(1.5), Y(1) - 6, '1', 'm', 'middle') + sText(X(2) + 8, Y(2) + 4, '2', 'm') +
+        sText(X(2.4), Y(0.55), 'Tangente: Steigung 2', 'n'));
+    }
+  },
+  ana_integral: {
+    cap: 'Das bestimmte Integral misst die Fläche zwischen Kurve und x-Achse. Für f(x) = x² zwischen 0 und 2 sind das 8/3.',
+    svg() {
+      const sc = sScale(-0.6, 3.4, -1, 10), f = x => x * x, X = sc.X, Y = sc.Y;
+      return svgBox('Fläche unter der Parabel zwischen 0 und 2', sAxes(sc, -0.6, 3.4, -1, 10, [1, 2, 3], [2, 4, 6, 8]) +
+        `<path d="M${f1(X(0))} ${f1(Y(0))}${sCurve(f, 0, 2, sc, 60).replace('M', 'L')}L${f1(X(2))} ${f1(Y(0))}Z" fill="var(--tcbg)" stroke="none"/>` +
+        `<path d="${sCurve(f, 0, 3.1, sc)}" fill="none" stroke="var(--tc)" stroke-width="3"/>` +
+        sLine(X(2), Y(0), X(2), Y(4), 'stroke="var(--tc)" stroke-dasharray="4 3" stroke-width="1.6"') +
+        sText(X(1.45), Y(0.45), 'Fläche', 'k', 'middle') + sText(X(2.5), Y(3), 'f(x) = x²', 'k') +
+        sText(X(0.6), Y(9.1), '∫₀² x² dx = 8/3 ≈ 2,67', ''));
+    }
+  },
+  ana_extrem: {
+    cap: 'An Hoch- und Tiefpunkten verläuft die Tangente waagerecht (f′ = 0). Das Vorzeichen von f″ verrät, ob es ein Hoch- oder ein Tiefpunkt ist.',
+    svg() {
+      const sc = sScale(-2.4, 2.4, -4.5, 4.5), f = x => x * x * x - 3 * x, X = sc.X, Y = sc.Y;
+      return svgBox('Kurve mit Hochpunkt bei x gleich minus 1 und Tiefpunkt bei x gleich 1', sAxes(sc, -2.4, 2.4, -4.5, 4.5, [-2, -1, 1, 2], [-2, 2]) +
+        `<path d="${sCurve(f, -2.15, 2.15, sc)}" fill="none" stroke="var(--tc)" stroke-width="3"/>` +
+        sLine(X(-1.6), Y(2), X(-0.4), Y(2), 'stroke="var(--new)" stroke-width="2.2" stroke-dasharray="5 3"') + sLine(X(0.4), Y(-2), X(1.6), Y(-2), 'stroke="var(--new)" stroke-width="2.2" stroke-dasharray="5 3"') +
+        sDot(X(-1), Y(2), 'var(--new)', 5) + sDot(X(1), Y(-2), 'var(--new)', 5) +
+        sText(X(-1), Y(2) - 27, 'Hochpunkt', 'k', 'middle') + sText(X(-1), Y(2) - 12, 'f′ = 0, f″ &lt; 0', '', 'middle') +
+        sText(X(1), Y(-2) + 19, 'Tiefpunkt', 'k', 'middle') + sText(X(1), Y(-2) + 34, 'f′ = 0, f″ &gt; 0', '', 'middle') +
+        sText(X(0.5), Y(4.1), 'f(x) = x³ − 3x', 'k'));
+    }
+  },
+  la_norm: {
+    cap: 'Die Länge eines Vektors ist die Hypotenuse eines rechtwinkligen Dreiecks aus seinen Koordinaten (Satz des Pythagoras).',
+    svg() {
+      const ox = 60, oy = 205, u = 38, X = x => ox + x * u, Y = y => oy - y * u;
+      return svgBox('Vektor (3|4) als Hypotenuse eines rechtwinkligen Dreiecks', `<g stroke="var(--muted)" stroke-width="1.2">${sLine(ox - 14, oy, 250, oy)}${sLine(ox, oy + 14, ox, 20)}</g>` +
+        `<polygon points="${f1(X(0))},${f1(Y(0))} ${f1(X(3))},${f1(Y(0))} ${f1(X(3))},${f1(Y(4))}" fill="var(--tcbg)"/>` +
+        sLine(X(0), Y(0), X(3), Y(0), 'stroke="var(--muted)" stroke-dasharray="4 3" stroke-width="1.6"') + sLine(X(3), Y(0), X(3), Y(4), 'stroke="var(--muted)" stroke-dasharray="4 3" stroke-width="1.6"') +
+        `<path d="M${f1(X(3) - 9)} ${f1(Y(0))}v-9h9" fill="none" stroke="var(--muted)" stroke-width="1.4"/>` +
+        sArrow(X(0), Y(0), X(3), Y(4), 'var(--tc)') +
+        sText(X(1.5), Y(0) + 17, '3', 'm', 'middle') + sText(X(3) + 9, Y(2) + 4, '4', 'm') + sText(X(3) + 9, Y(4) + 4, 'v = (3 | 4)', 'k') +
+        sText(215, 105, 'Länge des Vektors', 'm') + sText(215, 128, '|v| = √(3² + 4²) = 5', 'k'));
+    }
+  },
+  la_det2: {
+    cap: 'Die 2×2-Determinante ist die (vorzeichenbehaftete) Fläche des Parallelogramms, das die beiden Spalten oder Zeilen aufspannen.',
+    svg() {
+      const ox = 50, oy = 208, u = 50, X = x => ox + x * u, Y = y => oy - y * u;
+      return svgBox('Parallelogramm, aufgespannt von den Vektoren a gleich (3|1) und b gleich (1|2)', `<g stroke="var(--muted)" stroke-width="1.2">${sLine(ox - 14, oy, 300, oy)}${sLine(ox, oy + 14, ox, 20)}</g>` +
+        `<polygon points="${[[0, 0], [3, 1], [4, 3], [1, 2]].map(p => f1(X(p[0])) + ',' + f1(Y(p[1]))).join(' ')}" fill="var(--tcbg)" stroke="var(--tc)" stroke-width="1.6"/>` +
+        sArrow(X(0), Y(0), X(3), Y(1), 'var(--tc)') + sArrow(X(0), Y(0), X(1), Y(2), 'var(--new)') +
+        sText(X(3) + 8, Y(1) + 16, 'a = (3 | 1)', 'k') + sText(X(0) + 14, Y(2) - 26, 'b = (1 | 2)', 'n') +
+        sText(X(2.5), Y(1.9), 'Fläche', 'k', 'middle') +
+        sText(262, 122, 'det = 3·2 − 1·1 = 5', 'k') + sText(262, 142, '= Fläche des', 'm') + sText(262, 158, 'Parallelogramms', 'm'));
+    }
+  },
+  la_dot: {
+    cap: 'Das Skalarprodukt multipliziert die Länge von a mit dem Teil von b, der in Richtung von a zeigt (die Projektion).',
+    svg() {
+      const ox = 50, oy = 205, u = 50, X = x => ox + x * u, Y = y => oy - y * u, th = Math.atan2(3, 2);
+      return svgBox('Zwei Vektoren und die Projektion von b auf a', `<g stroke="var(--muted)" stroke-width="1.2">${sLine(ox - 14, oy, 290, oy)}${sLine(ox, oy + 14, ox, 20)}</g>` +
+        sLine(X(0), Y(0), X(2), Y(0), 'stroke="var(--new)" stroke-width="7" stroke-linecap="round" opacity=".45"') +
+        sLine(X(2), Y(3), X(2), Y(0), 'stroke="var(--muted)" stroke-dasharray="4 3" stroke-width="1.6"') +
+        sArrow(X(0), Y(0), X(4), Y(0), 'var(--tc)') + sArrow(X(0), Y(0), X(2), Y(3), 'var(--new)') +
+        `<path d="M${f1(ox + 30)} ${f1(oy)}A30 30 0 0 0 ${f1(ox + 30 * Math.cos(th))} ${f1(oy - 30 * Math.sin(th))}" fill="none" stroke="var(--muted)" stroke-width="1.4"/>` +
+        sText(ox + 38, oy - 12, 'θ', 'm') + sText(X(4) - 6, Y(0) + 20, 'a = (4 | 0)', 'k', 'end') + sText(X(2) + 9, Y(3) + 4, 'b = (2 | 3)', 'n') +
+        sText(X(1), Y(0) + 20, 'Projektion: 2', 'm', 'middle') +
+        sText(250, 70, 'a · b = |a| · Projektion', 'k') + sText(250, 92, '= 4 · 2 = 8', 'k'));
+    }
+  },
+  st_z: {
+    cap: 'Der z-Wert sagt, wie viele Standardabweichungen ein Wert über dem Mittelwert liegt. Die Fläche links davon ist die Wahrscheinlichkeit, höchstens so groß zu sein.',
+    svg() {
+      const sc = sScale(-3.6, 3.6, 0, 0.46), f = x => Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI), X = sc.X, Y = sc.Y;
+      return svgBox('Normalverteilung mit schraffierter Fläche links von z gleich 1', sAxes(sc, -3.6, 3.6, 0, 0.46, [-3, -2, -1, 0, 1, 2, 3], []) + sText(X(0), sc.B + 17, '0', 'm', 'middle') +
+        `<path d="M${f1(X(-3.5))} ${f1(Y(0))}${sCurve(f, -3.5, 1, sc, 100).replace('M', 'L')}L${f1(X(1))} ${f1(Y(0))}Z" fill="var(--tcbg)" stroke="none"/>` +
+        `<path d="${sCurve(f, -3.5, 3.5, sc)}" fill="none" stroke="var(--tc)" stroke-width="3"/>` +
+        sLine(X(1), Y(0), X(1), Y(0.31), 'stroke="var(--bad)" stroke-width="2" stroke-dasharray="5 3"') + sText(X(1) + 7, Y(0.31) + 4, 'z = 1', 'r') +
+        sText(X(-1.15), Y(0.12), 'Fläche ≈ 0,84', 'k', 'middle') + sText(X(-3.5), Y(0.43), 'z = Abstand vom Mittelwert', 'm') + sText(X(-3.5), Y(0.43) + 15, 'in Standardabweichungen', 'm'));
+    }
+  },
+  st_binom: {
+    cap: 'Die Binomialverteilung zählt Treffer bei n unabhängigen Versuchen. Hier: Wie wahrscheinlich sind genau k Treffer bei 5 Münzwürfen?',
+    svg() {
+      const p = [1, 5, 10, 10, 5, 1].map(c => c / 32), x0 = 62, bw = 40, gap = 20, base = 205, h = 120 / 0.3125;
+      let s = sLine(40, base, 404, base, 'stroke="var(--muted)" stroke-width="1.2"');
+      p.forEach((v, k) => {
+        const x = x0 + k * (bw + gap), on = k === 2;
+        s += `<rect x="${f1(x)}" y="${f1(base - v * h)}" width="${bw}" height="${f1(v * h)}" rx="3" fill="${on ? 'var(--tc)' : 'var(--tcbg)'}" stroke="var(--tc)" stroke-width="1.5"/>` +
+          sText(x + bw / 2, base - v * h - 6, fm(v, 2), on ? 'k' : 'm', 'middle') + sText(x + bw / 2, base + 17, String(k), 'm', 'middle');
+      });
+      return svgBox('Balkendiagramm der Binomialverteilung mit n gleich 5 und p gleich 0,5', s + sText(42, 22, 'n = 5, p = 0,5', 'm') + sText(404, 22, 'k Treffer', 'm', 'end') +
+        sText(404, 48, 'P(X = 2) = 10 · 0,5⁵ ≈ 0,31', 'k', 'end'));
+    }
+  }
+};
+const vizCard = id => VIZ[id] ? `<div class="lcard viz"><div class="lt">🖼️ So sieht es aus</div>${VIZ[id].svg()}<p class="note" style="margin:6px 0 0">${VIZ[id].cap}</p></div>` : '';
+
 let lessonId = null, lq = null, stepsShown = 0;
 const ruleRow = r => `<div class="rule"><span class="rl">${r[0]}</span><span class="rf">${r[1]}</span></div>`;
 
@@ -1857,6 +2057,7 @@ function showLesson(id, inSession) {
     <div class="memo">🧠 Merksatz: ${d.memo}</div>
     <div class="lcard"><div class="lt">🎯 Wozu das gut ist</div><p>${d.hook}</p></div>
     <div class="lcard"><div class="lt">💡 Die Kernidee</div><p>${d.idea}</p></div>
+    ${vizCard(id)}
     <div class="lcard"><div class="lt">📌 Merkkasten</div>${d.rules.map(ruleRow).join('')}
       ${d.more.length ? `<details class="more"><summary>Weitere Fälle und Rechenregeln</summary>${d.more.map(ruleRow).join('')}</details>` : ''}</div>
     <div class="lcard"><div class="lt">🧮 Beispiel Schritt für Schritt</div>
@@ -1918,7 +2119,7 @@ function miniCheck() {
 /* ---------- Session-Aufbau ---------- */
 function weakness(id) { const s = st(id); return (s.att ? s.cor / s.att : 0) + s.reps * 0.1; }
 function buildQueue(skillId) {
-  const N = 10;
+  const N = S.settings.sessionLen || 10;
   let pool = [];
   if (skillId) pool = [BY[skillId]];
   else {
@@ -1953,7 +2154,8 @@ function buildQueue(skillId) {
   return q;
 }
 function startSession(skillId) {
-  sess = { mode: 'train', queue: buildQueue(skillId), i: 0, results: [], scored: new Set(), retried: new Set(), lessonShown: new Set(), q: null, hint: false, answered: false };
+  sess = { mode: 'train', queue: buildQueue(skillId), i: 0, results: [], scored: new Set(), retried: new Set(), lessonShown: new Set(), q: null, hint: false, help: 0, answered: false,
+    before: Object.fromEntries(SKILLS.map(s => [s.id, status(s.id)[0]])) };
   showQuestion(false);
 }
 function startPlacement(tk) {
@@ -1967,7 +2169,7 @@ function showQuestion(afterLesson) {
   if (sess.i >= sess.queue.length) return sess.mode === 'test' ? placementResult() : summary();
   const id = sess.queue[sess.i], s = BY[id], test = sess.mode === 'test';
   if (!test && !afterLesson && !st(id).seen && !sess.lessonShown.has(id)) { sess.lessonShown.add(id); return showLesson(id, true); }
-  sess.q = s.gen(); sess.hint = false; sess.answered = false;
+  sess.q = s.gen(); sess.hint = false; sess.help = 0; sess.answered = false;
   const pct = Math.round(100 * sess.i / sess.queue.length);
   const label = test ? `Einstufungstest · ${TOPICS[sess.topic]}` : `${TOPICS[s.topic]} · ${s.title}`;
   draw(`<div class="row spread"><span class="tag">${label}</span><span class="tag">Aufgabe ${sess.i + 1} / ${sess.queue.length}</span></div>
@@ -1976,19 +2178,33 @@ function showQuestion(afterLesson) {
     <div class="row" style="margin-top:10px"><input id="ans" type="text" inputmode="text" autocomplete="off" placeholder="Antwort" autofocus>
     ${test
       ? `<button class="primary" id="chk" onclick="submit()">Weiter</button><button id="skipbtn" onclick="submit(true)">Weiß ich nicht</button>`
-      : `<button class="primary" id="chk" onclick="submit()">Prüfen</button><button id="hbtn" onclick="showHint()">Tipp</button>`}</div>
+      : `<button class="primary" id="chk" onclick="submit()">Prüfen</button><button id="hbtn" onclick="showHint()">Tipp</button><button id="ebtn" onclick="showExample()">Ähnliches Beispiel</button>`}</div>
     <div class="note">${sess.q.note}</div>
     ${workToggle()}
     <div id="workbox" style="display:${S.settings.workField ? 'block' : 'none'};margin-top:8px"><textarea id="work" rows="5" placeholder="Rechenweg: Zwischenschritte hier notieren (Strg+Enter prüft die Aufgabe)"></textarea></div>
-    <div id="hintbox"></div><div id="fb"></div></div>
+    <div id="hintbox"></div><div id="exbox"></div><div id="fb"></div></div>
     <div class="row"><button class="ghost small" onclick="if(confirm('${test ? 'Test abbrechen? Die bisherigen Antworten gehen verloren.' : 'Session abbrechen?'}'))home()">Abbrechen</button></div>`);
   const inp = document.getElementById('ans'); if (inp) inp.focus();
 }
 function showHint() {
   if (sess.answered) return;
-  sess.hint = true;
+  sess.hint = true; sess.help = Math.max(sess.help, 1);
   document.getElementById('hintbox').innerHTML = `<div class="hint">Tipp: ${sess.q.hint}</div>`;
   typeset();
+}
+// Zweite Hilfestufe: eine vorgerechnete Aufgabe desselben Typs (Beispiel-Aufgaben-Paar).
+// Sie verrät die eigene Antwort nicht; wer sie nutzt, bekommt die Wiederholung früher.
+function showExample() {
+  if (!sess || sess.answered || sess.mode !== 'train') return;
+  const s = BY[sess.queue[sess.i]];
+  let ex, tries = 0;
+  do { ex = s.gen(); tries++; } while (ex.q === sess.q.q && tries < 6);
+  sess.hint = true; sess.help = 2;
+  const box = document.getElementById('exbox');
+  box.innerHTML = `<div class="example"><b>So geht eine ähnliche Aufgabe</b><div class="q">${ex.q}</div>
+    <div class="steps"><div><b>Lösungsweg:</b></div>${ex.steps.map(x => `<div>${x}</div>`).join('')}<div>Ergebnis: <b>${fm(ex.ans, ex.d)}</b></div></div>
+    <p class="note" style="margin-bottom:0">Jetzt bist du dran mit deiner eigenen Aufgabe. Mit Hilfe gelöste Aufgaben kommen früher wieder, damit du sie danach ohne Hilfe festigst.</p></div>`;
+  typeset(box);
 }
 function parseNum(raw) {
   let s = String(raw).trim().replace(/\s+/g, '').replace(/%$/, '').replace(/−/g, '-').replace(',', '.');
@@ -2029,11 +2245,16 @@ function submit(skip) {
   inp.disabled = true; if (wEl) wEl.disabled = true;
   document.getElementById('chk').style.display = 'none';
   document.getElementById('hbtn').style.display = 'none';
+  document.getElementById('ebtn').style.display = 'none';
   const last = sess.i + 1 >= sess.queue.length;
-  document.getElementById('fb').innerHTML = `<div class="fb ${ok ? 'ok' : 'bad'}"><b>${ok ? 'Richtig.' : 'Nicht ganz.'}</b> ${ok ? '' : `Richtig wäre <b>${fm(q.ans, q.d)}</b>.`}
-    ${ok && sess.hint ? ' (mit Tipp: wird morgen wiederholt)' : ''}${!ok ? ' Das Thema kommt später in dieser Session noch einmal.' : ''}
+  const les = LES[id];
+  // Rückmeldung mit Information statt bloßem Lob: Gegenüberstellung, typischer Fehler, Regeln zum Nachschlagen
+  const fix = !ok && les ? `<div class="fixbox"><b>Typischer Fehler bei diesem Thema:</b> ${les.pitfall}</div>
+    <details class="tc-${BY[id].topic}"><summary>Merksatz und Regeln nachschlagen</summary><div class="memo" style="margin-top:8px">🧠 ${les.memo}</div>${les.rules.map(ruleRow).join('')}</details>` : '';
+  document.getElementById('fb').innerHTML = `<div class="fb ${ok ? 'ok' : 'bad'}"><b>${ok ? 'Richtig.' : 'Nicht ganz.'}</b> ${ok ? '' : `Deine Antwort: <b>${esc(inp.value)}</b> · richtig wäre <b>${fm(q.ans, q.d)}</b>.`}
+    ${ok && sess.hint ? ' Mit Hilfe gelöst: Das Thema kommt morgen wieder, damit du es ohne Hilfe festigst.' : ''}${ok && !sess.hint ? `<span class="meta"> · ${dueText(id)}</span>` : ''}${!ok ? ' Das Thema kommt später in dieser Session noch einmal.' : ''}
     ${workHTML(work)}
-    <div class="steps"><div><b>Lösungsweg:</b></div>${q.steps.map(x => `<div>${x}</div>`).join('')}</div></div>
+    <div class="steps"><div><b>Lösungsweg:</b></div>${q.steps.map(x => `<div>${x}</div>`).join('')}</div>${fix}</div>
     <div class="row" style="margin-top:12px"><button class="primary" onclick="next()">${last ? 'Auswertung' : 'Weiter'}</button><span class="note">Enter genügt</span></div>`;
   typeset();
 }
@@ -2058,8 +2279,9 @@ function record(id, ok, hint) {
       s.reps = 0; s.interval = 0; s.due = now; s.ease = Math.max(1.3, s.ease - 0.2);
     }
   }
-  S.log.push({ t: now, id, ok, h: hint ? 1 : 0 });
+  S.log.push({ t: now, id, ok, h: hint ? (sess.help || 1) : 0 });
   if (S.log.length > 1000) S.log = S.log.slice(-1000);
+  markDay();
   save();
 }
 
@@ -2069,9 +2291,22 @@ function summary() {
   const r = sess.results, n = r.length, c = r.filter(x => x.ok).length;
   const by = {};
   r.forEach(x => { (by[x.id] = by[x.id] || { ok: 0, n: 0 }); by[x.id].n++; if (x.ok) by[x.id].ok++; });
-  let h = `<h1>Session beendet</h1><p class="sub">${c} von ${n} richtig (${n ? Math.round(100 * c / n) : 0} %).</p><div class="card"><table class="sum">`;
+  const helped = r.filter(x => x.hint).length;
+  let h = `<h1>Session beendet</h1><p class="sub">${c} von ${n} richtig (${n ? Math.round(100 * c / n) : 0} %)${helped ? `, ${helped} ${helped === 1 ? 'Aufgabe' : 'Aufgaben'} mit Hilfe` : ''}.</p>`;
+  // Kompetenz-Rückmeldung: was sich im Lernstand konkret verändert hat
+  const rank = { 'Neu': 0, 'Lernend': 1, 'Gefestigt': 2 };
+  const moved = Object.keys(by).filter(id => sess.before && sess.before[id] !== status(id)[0]);
+  h += `<div class="card"><h2>Das hat sich getan</h2>`;
+  if (moved.length) {
+    h += moved.map(id => {
+      const a = sess.before[id], b = status(id)[0], up = rank[b] > rank[a];
+      return `<div class="chg"><span class="t">${BY[id].title}</span><span class="badge ${STATUS_CLS[a]}" style="margin-left:0">${a}</span>→<span class="badge ${STATUS_CLS[b]}" style="margin-left:0">${b}</span>${up ? '' : '<span class="meta">(ein Fehler setzt den Wiederholungsplan zurück, das ist normal)</span>'}</div>`;
+    }).join('');
+  } else h += `<p class="note" style="margin:0">Kein Themenwechsel in dieser Session. Festigen braucht Wiederholungen an mehreren Tagen, nicht mehr Aufgaben an einem.</p>`;
+  h += `</div><div class="card"><table class="sum">`;
   for (const [id, v] of Object.entries(by)) h += `<tr><td>${BY[id].title}</td><td>${v.ok}/${v.n} richtig</td><td class="meta">${dueText(id)}</td></tr>`;
-  h += `</table></div><div class="row"><button class="primary" onclick="startSession()">Noch eine Session</button><button onclick="home()">Übersicht</button></div>`;
+  h += `</table></div><div class="card"><h2>Diese Woche</h2>${weekStrip()}<p class="note" style="margin:0">${goalText()}</p></div>
+    <div class="row"><button class="primary" onclick="startSession()">Noch eine Session</button><button onclick="home()">Übersicht</button></div>`;
   draw(h);
 }
 
@@ -2093,6 +2328,7 @@ function placementResult() {
     else if (r === 'partial' && !z.seen) Object.assign(z, { seen: true, reps: 1, interval: 1, due: now + DAY });
   }
   S.placement[tk] = { t: now, res };
+  markDay();
   save();
   const v = Object.values(res), k = v.filter(x => x === 'known').length, p = v.filter(x => x === 'partial').length, n = v.filter(x => x === 'new').length;
   const wrong = sess.items.filter(x => !x.ok);
@@ -2125,7 +2361,7 @@ function importData(el) {
       const o = JSON.parse(rd.result);
       if (!o || typeof o.skills !== 'object') throw new Error('format');
       if (!confirm('Aktuellen Fortschritt durch die Datei ersetzen?')) return;
-      S = { skills: o.skills, log: o.log || [], placement: o.placement || {}, settings: Object.assign(defState().settings, o.settings || {}) };
+      S = { skills: o.skills, log: o.log || [], placement: o.placement || {}, days: Array.isArray(o.days) ? o.days : [], settings: Object.assign(defState().settings, o.settings || {}) };
       save(); home();
     } catch (e) { alert('Die Datei konnte nicht gelesen werden.'); }
   };
