@@ -73,6 +73,14 @@ textarea{font:inherit;font-size:.98rem;width:100%;padding:9px 12px;border-radius
 textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
 .toggle{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.9rem;margin-top:12px;cursor:pointer}
 .userwork{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.92rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#ans{font-size:1.25rem;min-height:48px;width:min(300px,100%)}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{min-width:42px;min-height:40px;padding:4px 10px;font-size:1.05rem;line-height:1;background:var(--bg)}
+.keys-work{margin:0 0 6px}
+#apv{min-height:1.3em;margin-top:6px}
+#work{line-height:1.6;min-height:120px;max-height:360px}
+@media (pointer:coarse){button{min-height:44px}.toggle{min-height:44px}.toggle input{width:22px;height:22px}}
 details{border-top:1px solid var(--line);padding:8px 0}
 details:first-of-type{border-top:0}
 summary{cursor:pointer;font-weight:600}
@@ -2175,16 +2183,46 @@ function showQuestion(afterLesson) {
   draw(`<div class="row spread"><span class="tag">${label}</span><span class="tag">Aufgabe ${sess.i + 1} / ${sess.queue.length}</span></div>
     <div class="prog"><i style="width:${pct}%"></i></div>
     <div class="card"><div class="q">${sess.q.q}</div>
-    <div class="row" style="margin-top:10px"><input id="ans" type="text" inputmode="text" autocomplete="off" placeholder="Antwort" autofocus>
+    <label for="ans" class="sr">Deine Antwort (Zahl oder Bruch)</label>
+    <div class="row" style="margin-top:10px"><input id="ans" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="apv" placeholder="Antwort" oninput="ansPreview()" autofocus>
     ${test
       ? `<button class="primary" id="chk" onclick="submit()">Weiter</button><button id="skipbtn" onclick="submit(true)">Weiß ich nicht</button>`
       : `<button class="primary" id="chk" onclick="submit()">Prüfen</button><button id="hbtn" onclick="showHint()">Tipp</button><button id="ebtn" onclick="showExample()">Ähnliches Beispiel</button>`}</div>
+    <div class="keys" role="group" aria-label="Zeichen für die Antwort">${['−', '/', ',', '%'].map(c => `<button type="button" onmousedown="event.preventDefault()" onclick="insertSym('ans','${c}')" aria-label="${c} einfügen">${c}</button>`).join('')}</div>
+    <div id="apv" class="note" aria-live="polite"></div>
     <div class="note">${sess.q.note}</div>
     ${workToggle()}
-    <div id="workbox" style="display:${S.settings.workField ? 'block' : 'none'};margin-top:8px"><textarea id="work" rows="5" placeholder="Rechenweg: Zwischenschritte hier notieren (Strg+Enter prüft die Aufgabe)"></textarea></div>
+    <div id="workbox" style="display:${S.settings.workField ? 'block' : 'none'};margin-top:8px"><label for="work" class="sr">Rechenweg</label>
+      <div class="keys keys-work" role="group" aria-label="Zeichen für den Rechenweg">${['·', '÷', '²', '√', '±', 'π', '=', '→'].map(c => `<button type="button" onmousedown="event.preventDefault()" onclick="insertSym('work','${c}')" aria-label="${c} einfügen">${c}</button>`).join('')}</div>
+      <textarea id="work" rows="4" placeholder="Rechenweg: ein Schritt pro Zeile (${MODKEY}+Enter prüft die Aufgabe)" oninput="growWork(this)"></textarea></div>
     <div id="hintbox"></div><div id="exbox"></div><div id="fb"></div></div>
     <div class="row"><button class="ghost small" onclick="if(confirm('${test ? 'Test abbrechen? Die bisherigen Antworten gehen verloren.' : 'Session abbrechen?'}'))home()">Abbrechen</button></div>`);
   const inp = document.getElementById('ans'); if (inp) inp.focus();
+}
+const MODKEY = /Mac|iPhone|iPad/.test((navigator.platform || '') + (navigator.userAgent || '')) ? '⌘' : 'Strg';
+// Sonderzeichen an der Cursorposition einfügen (Fokus bleibt im Feld, Tastatur am Handy bleibt offen)
+function insertSym(id, t) {
+  const el = document.getElementById(id);
+  if (!el || el.disabled) return;
+  const a = el.selectionStart == null ? el.value.length : el.selectionStart;
+  const b = el.selectionEnd == null ? a : el.selectionEnd;
+  el.value = el.value.slice(0, a) + t + el.value.slice(b);
+  el.focus();
+  try { el.setSelectionRange(a + t.length, a + t.length); } catch (e) {}
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+// Rechenweg-Feld wächst mit dem Text (bis zur Maximalhöhe)
+function growWork(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight + 2, 360) + 'px'; }
+// Live-Rückmeldung, wie die Eingabe gelesen wird (verrät nichts über die Lösung)
+function ansPreview() {
+  const el = document.getElementById('ans'), box = document.getElementById('apv');
+  if (!el || !box) return;
+  const raw = el.value.trim();
+  if (!raw || /[\/,.\-−]$/.test(raw)) { box.textContent = ''; return; }
+  const v = parseNum(raw);
+  if (Number.isNaN(v)) { box.textContent = 'Noch keine Zahl erkannt. Erlaubt: 3,5 · 7/2 · −4'; return; }
+  const t = v.toLocaleString('de-DE', { maximumFractionDigits: 6 });
+  box.textContent = raw.includes('/') ? `= ${t}` : `Erkannt: ${t}`;
 }
 function showHint() {
   if (sess.answered) return;
@@ -2243,6 +2281,7 @@ function submit(skip) {
   sess.results.push({ id, ok, hint: sess.hint });
   if (!ok && !sess.retried.has(id)) { sess.retried.add(id); sess.queue.push(id); }
   inp.disabled = true; if (wEl) wEl.disabled = true;
+  const apv = document.getElementById('apv'); if (apv) apv.textContent = '';
   document.getElementById('chk').style.display = 'none';
   document.getElementById('hbtn').style.display = 'none';
   document.getElementById('ebtn').style.display = 'none';

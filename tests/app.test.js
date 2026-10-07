@@ -67,6 +67,17 @@ w.addEventListener('load', () => {
   ev('next()');
   if (/Weiter zur Aufgabe/.test($('#app').innerHTML)) ev('showQuestion(true)');
   $('#ans').value = String(ev('sess.q.ans'));
+  // Bedienkomfort: Sonderzeichen-Tasten und Live-Vorschau
+  $('#ans').value = '3/';
+  ev("insertSym('ans','4')");
+  check($('#ans').value === '3/4', 'Zeichen-Taste fügt Ziffer/Zeichen ein');
+  check(/0,75/.test($('#apv').textContent), 'Live-Vorschau liest Bruch 3/4 als 0,75');
+  $('#ans').value = 'abc'; ev('ansPreview()');
+  check(/Noch keine Zahl/.test($('#apv').textContent), 'Live-Vorschau meldet nicht erkannte Eingabe');
+  ev("insertSym('work','√')");
+  check($('#work').value.includes('√'), 'Zeichen-Taste fügt Zeichen in den Rechenweg ein');
+  check($('#ans').getAttribute('inputmode') === 'decimal' && !!w.document.querySelector('label[for=ans]'), 'Antwortfeld: Zahlen-Tastatur und Label');
+  $('#ans').value = String(ev('sess.q.ans'));
   const ta = $('#work');
   ta.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
   check(ev('sess.answered') === false, 'Enter im Rechenweg-Feld löst keine Prüfung aus');
